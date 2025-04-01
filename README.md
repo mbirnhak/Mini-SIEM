@@ -1,5 +1,5 @@
 # Mini-SIEM: Digital Forensics Log Analyzer
-A mini security information and event management system for my Spring 2025 Database Fundamentals Coruse.
+A mini security information and event management system for my Spring 2025 Database Fundamentals Course.
 
 ## Name
 Matthew Birnhak
