@@ -1,0 +1,130 @@
+@startuml
+
+skinparam linetype ortho
+
+entity "USER" {
+  * UserID : integer <<PK>>
+  --
+  Name : string
+  Email : string
+  Username : string
+  Password_Hash : string
+  Role : string // e.g. Admin, Analyst
+  CreatedAt : datetime
+  LastLogin : datetime
+}
+
+entity "LOG_FILE" {
+  * FileID : integer <<PK>>
+  --
+  UploadedBy : integer <<FK to USER>>
+  SourceName : string
+  SourceType : string
+  Filename : string
+  UploadTime : datetime
+  Status : string
+  FileSize : integer
+  RawContent : text  // or json/jsonb depending on DBMS
+}
+
+
+entity "LOG_EVENT" {
+  * LogEventID : integer <<PK>>
+  --
+  FileID : integer <<FK to LOG FILE>>
+  Timestamp : datetime
+  LogSource : string
+  SourceDeviceID : integer <<FK to DEVICE>>
+  DestinationDeviceID : integer <<FK to DEVICE>>
+  Action : string
+  Severity : string
+  Message : string
+  ParsedData : json
+  RawLine : text
+  EventCategoryID : integer <<FK to EVENT CATEGORY>>
+  AssociatedAlertID : integer <<FK to ALERT>>  // nullable
+}
+
+
+entity "EVENT_CATEGORY" {
+    * EventCategoryID : integer
+    --
+    CategoryName : string
+    Description : string  // e.g., Authentication, Network Activity
+}
+
+entity "ALERT" {
+  * AlertID : integer <<PK>>
+  --
+  TriggeredAt : datetime
+  RuleID : integer <<FK to ALERT RULE>>
+  Severity : string
+  Description : string
+  Status : string  // e.g., Open, In Progress, Resolved
+}
+
+entity "DEVICE" {
+  * DeviceID : integer <<PK>>
+  --
+  IPAddress : string
+  Hostname : string
+  OperatingSystem : string
+  Location : string
+  DeviceType : string
+}
+
+entity "INCIDENT_REPORT" {
+    * ReportID : integer <<PK>>
+    --
+    Title : string
+    Description : text
+    CreatedAt : datetime
+    CreatedBy : integer <<FK to USER>>
+    RelatedAlertID : integer <<FK to ALERT>> <<nullable>>
+    Severity : string
+    Status : string  // e.g., Open, Closed, Escalated
+}
+
+entity "INCIDENT_EVENT_LINK" {
+  * LinkID : integer <<PK>>
+  --
+  ReportID : integer <<FK to INCIDENT_REPORT>>
+  LogEventID : integer <<FK to LOG_EVENT>>
+}
+
+entity "ALERT_RULE" {
+  * RuleID : integer <<PK>>
+  --
+  Name : string
+  Description : string
+  Severity : string
+  ConditionLogic : json
+  IsActive : boolean  // Whether to use the rule or not
+  CreatedBy : integer <<FK to USER>>
+  CreatedAt : datetime
+}
+
+entity "THREAT_INTEL" {
+    * ThreatID : integer <<PK>>
+    --
+    Indicator : string
+    Type : string
+    Severity : string
+    Description : string
+}
+
+'Regular relationships with cardinality'
+INCIDENT_EVENT_LINK }o---|| INCIDENT_REPORT : "REPORTS"
+INCIDENT_EVENT_LINK |o---|| LOG_EVENT : "IS REPORTED"
+USER ||---o{ LOG_FILE : "UPLOADS"
+USER ||---o{ ALERT_RULE : "CREATES"
+USER ||---o{ INCIDENT_REPORT : "WRITES"
+DEVICE ||---|{ LOG_EVENT : "SENT TO"
+DEVICE ||---|{ LOG_EVENT : "SENT FROM"
+ALERT }o---|| ALERT_RULE : "TRIGGERS"
+ALERT |o---o| INCIDENT_REPORT : "DISCUSSED IN"
+LOG_EVENT }o---o| EVENT_CATEGORY : "BELONGS TO"
+LOG_EVENT }|---o| ALERT : "CAUSED BY"
+THREAT_INTEL ..... ALERT_RULE : "Referenced in condition logic"
+
+@enduml
