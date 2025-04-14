@@ -62,3 +62,6 @@ Search and filter logs, view alert details, view different charts & diagrams of 
 Analysts review alerts, mark incidents as resolved. Can manually categorize logs.
 ### Delete
 Remove outdated logs, clear false positives
+
+## ER Diagram
+![alt text](image.png)
