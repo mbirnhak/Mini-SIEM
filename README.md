@@ -20,17 +20,7 @@ The proposed system will include several key entities to manage log collection, 
 - Represents raw log data collected from different sources, such as web servers, firewalls, and system event logs. Each log file is parsed and stored for further analysis
 
 3. **Log Events**:
-- Represents individual log entries extracted from log files. Each event includes details such as timestamp, source, severity level, message content, and associated metadata.  
-- Information stored: 
-    - timestamp
-    - log_source
-    - source_device
-    - destination_device
-    - action
-    - severity
-    - message
-    - parsed_data
-    - associated_alert_id
+- Represents individual log entries extracted from log files. Each event includes details such as timestamp, source, severity level, message content, and associated metadata.
 
 4. **Event Categories**:
 - Defines classifications for log events, such as authentication attempts, network activity, or security alerts. Categorizing events helps users filter and analyze logs more efficiently.  
@@ -58,11 +48,10 @@ The proposed system will include several key entities to manage log collection, 
 These entities will form the foundation of the system, ensuring structured storage, efficient querying, and effective log analysis.
 
 
-
 ## Technology Stack
 - Frontend: React.js
 - Backeend: Java with Springboot
-- Database: PostgreSQL
+- Database: PostgreSQL with extension for time-series data (TimescaleDB)
 
 ## User CRUD Operations
 ### Create
