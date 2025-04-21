@@ -101,16 +101,40 @@
 - Therefore, all of the tables above are already in Second Normal Form.
 
 ## Third Normal Form
-- **USER**:
-    - UserID (PK)
-    - Name
-    - Email
-    - Username
-    - Password_Hash
-    - Role
-    - CreatedAt
-    - LastLogin
+Are there any non-key columns that depend on another non-key column?
 
+### *USER:*
+- Everything fully depends on UserID except:
+    - Username: Functionally depends on Email, since each email is associated with only one account.
+    - Password_Hash: Also depends on Email for the same reason — each email is tied to a single password hash.
+
+Analysis:
+There is a transitive dependency: Username and Password_Hash depend on Email, which itself depends on the primary key UserID. Since Username and Password_Hash are non-key columns depending on another non-key column (Email), the table is not in Third Normal Form.
+
+Solution:
+To bring the table into 3NF, the transitive dependency must be removed. Email is set as a unique identifier (by adding a UNIQUE constraint), and the dependent columns are separated into a new table:
+
+**USER**:
+---
+| UserID (PK) | Name | Email (FK, UNIQUE) | Role | CreatedAt | LastLogin |
+|-------------|------|--------------------|------|-----------|-----------|
+---
+
+**USER_CREDENTIALS**:
+---
+| Email (PK) | Username | Password_Hash |
+|------------|----------|----------------|
+---
+
+### *LOG_FILE:*
+- Everything fully depends on FileID except:
+    - FileSize: Functionally depends on RawContent, since the file size is calculated based on the content in the file.
+
+Analysis:
+There is a transitive dependency: FileSize depends on RawContent, which itself depends on the primary key FileID. Since FileSize is a non-key columns depending on another non-key column (RawContent), the table is not in Third Normal Form.
+
+Solution:
+To bring the table into 3NF, the transitive dependency must be removed. The field FileSize is dropped from the table since it can easily be calculated if needed. New table:
 - **LOG_FILE**:
     - FileID (PK)
     - UploadedBy (FK to USER)
@@ -119,10 +143,10 @@
     - Filename
     - UploadTime
     - Status
-    - FileSize
     - RawContent
 
-- **LOG_EVENT**:
+### *LOG_EVENT:*
+- LOG_EVENT:
     - LogEventID (PK)
     - FileID (FK to LOG_FILE)
     - Timestamp
@@ -137,12 +161,14 @@
     - EventCategoryID (FK to EVENT_CATEGORY)
     - AssociatedAlertID (FK to ALERT)
 
-- **EVENT_CATEGORY**:
+### *EVENT_CATEGORY:*
+- EVENT_CATEGORY:
     - EventCategoryID (PK)
     - CategoryName
     - Description
 
-- **ALERT**:
+### *ALERT:*
+- ALERT:
     - AlertID (PK)
     - TriggeredAt
     - RuleID (FK to ALERT_RULE)
@@ -150,7 +176,8 @@
     - Description
     - Status
 
-- **DEVICE**:
+### *DEVICE:*
+- DEVICE:
     - DeviceID (PK)
     - IPAddress
     - Hostname
@@ -158,7 +185,8 @@
     - Location
     - DeviceType
 
-- **INCIDENT_REPORT**:
+### *INCIDENT_REPORT:*
+- INCIDENT_REPORT:
     - ReportID (PK)
     - Title
     - Description
@@ -168,12 +196,14 @@
     - Severity
     - Status
 
-- **INCIDENT_EVENT_LINK**:
+### *INCIDENT_EVENT_LINK:*
+- INCIDENT_EVENT_LINK:
     - LinkID (PK)
     - ReportID (FK to INCIDENT_REPORT)
     - LogEventID (FK to LOG_EVENT)
 
-- **ALERT_RULE**:
+### *ALERT_RULE:*
+- ALERT_RULE:
     - RuleID (PK)
     - Name
     - Description
@@ -183,7 +213,8 @@
     - CreatedBy (FK to USER)
     - CreatedAt
 
-- **THREAT_INTEL**:
+### *THREAT_INTEL:*
+- THREAT_INTEL:
     - ThreatID (PK)
     - Indicator
     - Type
