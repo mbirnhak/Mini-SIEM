@@ -109,7 +109,9 @@ Remove outdated logs, clear false positives
 | Timestamp         | Date and time when the log event occurred                  |
 | LogSource         | Identifier or name of the system that generated the event |
 | SourceDeviceID    | Reference to the source device involved in the event       |
+| SourcePort        | Network port on the source device that initiated the event |
 | DestinationDeviceID| Reference to the destination device involved in the event |
+| DestinationPort   | Network port on the destination device that received the connection/event |
 | Action            | The action performed (e.g., login, file access, network connection) |
 | Severity          | Severity level of the event (e.g., Low, Medium, High, Critical) |
 | Message           | Human-readable description or summary of the event        |

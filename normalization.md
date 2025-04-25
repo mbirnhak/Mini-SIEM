@@ -103,7 +103,7 @@
 ## Third Normal Form
 Are there any non-key columns that depend on another non-key column?
 
-### *USER:*
+## **USER**:
 - Everything fully depends on UserID except:
     - Username: Functionally depends on Email, since each email is associated with only one account.
     - Password_Hash: Also depends on Email for the same reason — each email is tied to a single password hash.
@@ -114,19 +114,17 @@ There is a transitive dependency: Username and Password_Hash depend on Email, wh
 Solution:
 To bring the table into 3NF, the transitive dependency must be removed. Email is set as a unique identifier (by adding a UNIQUE constraint), and the dependent columns are separated into a new table:
 
-**USER**:
----
-| UserID (PK) | Name | Email (FK, UNIQUE) | Role | CreatedAt | LastLogin |
-|-------------|------|--------------------|------|-----------|-----------|
+| Table: Users           |          |                    |      |           |           |
+|------------------------|----------|--------------------|------|-----------|-----------|
+| UserID (PK)            | Name     | Email (FK, UNIQUE) | Role | CreatedAt | LastLogin |
+
+| Table: UserCredentials |          |               |
+|------------------------|----------|---------------|
+| Email (PK)             | Username | Password_Hash |
+
 ---
 
-**USER_CREDENTIALS**:
----
-| Email (PK) | Username | Password_Hash |
-|------------|----------|----------------|
----
-
-### *LOG_FILE:*
+## **LOG_FILE**:
 - Everything fully depends on FileID except:
     - FileSize: Functionally depends on RawContent, since the file size is calculated based on the content in the file.
 
@@ -135,66 +133,88 @@ There is a transitive dependency: FileSize depends on RawContent, which itself d
 
 Solution:
 To bring the table into 3NF, the transitive dependency must be removed. The field FileSize is dropped from the table since it can easily be calculated if needed. New table:
-- **LOG_FILE**:
-    - FileID (PK)
-    - UploadedBy (FK to USER)
-    - SourceName
-    - SourceType
-    - Filename
-    - UploadTime
-    - Status
-    - RawContent
 
-### *LOG_EVENT:*
-- LOG_EVENT:
-    - LogEventID (PK)
-    - FileID (FK to LOG_FILE)
-    - Timestamp
-    - LogSource
-    - SourceDeviceID (FK to DEVICE)
-    - DestinationDeviceID (FK to DEVICE)
-    - Action
-    - Severity
-    - Message
-    - ParsedData
-    - RawLine
-    - EventCategoryID (FK to EVENT_CATEGORY)
-    - AssociatedAlertID (FK to ALERT)
+| Table: LogFile         |               |            |             |          |             |        |             |
+|------------------------|---------------|------------|-------------|----------|-------------|--------|-------------|
+| FileID (PK)            | UploadedBy(FK)| SourceName | SourceType  | Filename | UploadTime  | Status | RawContent  |
 
-### *EVENT_CATEGORY:*
-- EVENT_CATEGORY:
-    - EventCategoryID (PK)
-    - CategoryName
-    - Description
+---
 
-### *ALERT:*
-- ALERT:
-    - AlertID (PK)
-    - TriggeredAt
-    - RuleID (FK to ALERT_RULE)
-    - Severity
-    - Description
-    - Status
+## **LOG_EVENT**:
+- The table is not in 3NF, because SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID depend on RawLine. And EventCategoryID depends on Action.
 
-### *DEVICE:*
-- DEVICE:
-    - DeviceID (PK)
-    - IPAddress
-    - Hostname
-    - OperatingSystem
-    - Location
-    - DeviceType
+Analysis: 
+RawLine determines SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID. Furthermore, Action determine EventCategoryID since the event category something falls into is determined by the specific action that occurred. For example, the Actoin: "login failed" determines the EventCategory: "Authentication".
 
-### *INCIDENT_REPORT:*
-- INCIDENT_REPORT:
-    - ReportID (PK)
-    - Title
-    - Description
-    - CreatedAt
-    - CreatedBy (FK to USER)
-    - RelatedAlertID (FK to ALERT)
-    - Severity
-    - Status
+Solution:
+To bring the table into 3NF, the transitive dependencies are removed. SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, and ParsedData are moved to a new table called RAW_LINE. The RawLine is the PK of this table and a FK in the LOG_EVENT table. Lastly, another table is created for ACTION. The Aciton is the PK and is referenced as the FK in the RAW_LINE table. The new ACTION table includes the EventCategoryID.
+
+
+| Table: LogEvent              |             |           |           |         |                        |
+|------------------------------|-------------|-----------|-----------|---------|------------------------|
+| LogEventID (PK)              | FileID (FK) | Timestamp | LogSource | RawLine | AssociatedAlertID (FK) |
+
+| Table: RawLine  |       |       |               |       |             |          |         |             |
+|-------------------------------|----------------------|-------------|----------------------------|------------------|-------------|----------|---------|-------------|
+| RawLine (PK)                  | SourceDeviceID (FK)  | SourcePort  | DestinationDeviceID (FK)   | DestinationPort  | Action (FK) | Severity | Message | ParsedData  |
+
+| Table: Action       |                      |
+|---------------------|----------------------|
+| Action (PK)         | EventCategoryID (FK) |
+
+---
+
+## **EVENT_CATEGORY**:
+- The table is not in 3NF. The field Description is determiend by the CategoryName.
+
+Analysis:
+CategoryName determines the value of Description. This is because the Description field describes the meaning of the CategoryName.
+
+Solution:
+The EventCategoryID is dropped and the CategoryName is made to be the PK.
+
+| Table: EventCategory        |             |
+|-----------------------------|-------------|
+| CategoryName (PK)           | Description |
+
+---
+
+## **ALERT**:
+- This table is not in 3NF. The Severity and Description are determines by the RuleID which is a non-key column.
+
+Analysis: 
+The Severity and Description are determined by the Rule that governs them.
+
+Solution:
+These values are removed since they are already covered in the ALERT_RULE table anyways and can be accessed via the FK reference in RuleID.
+
+| Table: Alert                |             |                           |        |
+|-----------------------------|-------------|---------------------------|--------|
+| AlertID (PK)                | TriggeredAt | RuleID (FK to ALERT_RULE) | Status |
+
+---
+
+## **DEVICE**:
+- Assuming IP addresses can be dynamic (changing), every column depends only on the DeviceID. So, the table statys the same.
+
+| Table: Device              |             |         |                 |          |            |
+|----------------------------|-------------|---------|-----------------|----------|------------|
+| DeviceID (PK)              | IPAddress   | Hostname| OperatingSystem | Location | DeviceType |
+
+---
+
+## **INCIDENT_REPORT**:
+- This table is not in 3NF. Severity and status depend on RelatedAlertID.
+
+Analysis: 
+The Severity is determined by the Rule that governs the RelatedAlertID. Therefore, it depends on RelatedAlertID. Status is determined by the RelatedAlertID since the alert keeps track of the status of the incident referenced by the alert.
+
+Solution:
+These values are removed since they are already covered in the ALERT table or through it (in the ALERT_RULE table) and can be accessed via the FK reference in RelatedAlertID.
+
+| Table: IncidentReport      |       |             |           |                        |                              |
+|----------------------------|-------|-------------|-----------|------------------------|------------------------------|
+| ReportID (PK)              | Title | Description | CreatedAt | CreatedBy (FK to USER) | RelatedAlertID (FK to ALERT) |
 
 ### *INCIDENT_EVENT_LINK:*
 - INCIDENT_EVENT_LINK:
@@ -222,8 +242,3 @@ To bring the table into 3NF, the transitive dependency must be removed. The fiel
     - Description
 
 ## Boyce-Codd Normal Form (BCNF)
-### Step 1: Identify Functional Dependencies
-- 
-
-### Step 2: Identify Candidate Keys
-- 
