@@ -63,6 +63,20 @@ Analysts review alerts, mark incidents as resolved. Can manually categorize logs
 ### Delete
 Remove outdated logs, clear false positives
 
+## List of All Final Tables:
+- USER
+- LOG_FILE
+- LOG_EVENT
+- RAW_LINE
+- ACTION
+- EVENT_CATEGORY
+- ALERT
+- DEVICE
+- INCIDENT_REPORT
+- INCIDENT_EVENT_LINK
+- ALERT_RULE
+- THREAT_INTEL
+
 ## ER Diagram
 ![alt text](image-1.png)
 
