@@ -23,44 +23,50 @@ entity "LOG_FILE" {
   Filename : string
   UploadTime : datetime
   Status : string
-  FileSize : integer
   RawContent : text  // or json/jsonb depending on DBMS
 }
-
 
 entity "LOG_EVENT" {
   * LogEventID : integer <<PK>>
   --
-  FileID : integer <<FK to LOG FILE>>
+  FileID : integer <<FK to LOG_FILE>>
   Timestamp : datetime
   LogSource : string
-  SourceDeviceID : integer <<FK to DEVICE>>
-  DestinationDeviceID : integer <<FK to DEVICE>>
-  Action : string
-  Severity : string
-  Message : string
-  ParsedData : json
-  RawLine : text
-  EventCategoryID : integer <<FK to EVENT CATEGORY>>
+  RawLine : text <<FK to RAW_LINE>>
   AssociatedAlertID : integer <<FK to ALERT>>  // nullable
 }
 
+entity "RAW_LINE" {
+  * RawLine : text <<PK>>
+  --
+  SourceDeviceID : integer <<FK to DEVICE>>
+  SourcePort : integer
+  DestinationDeviceID : integer <<FK to DEVICE>>
+  DestinationPort : integer
+  Action : string <<FK to ACTION>>
+  Severity : string
+  Message : string
+  ParsedData : json
+}
+
+entity "ACTION" {
+  * Action : string <<PK>>
+  --
+  CategoryName : string <<FK to EVENT_CATEGORY>>
+}
 
 entity "EVENT_CATEGORY" {
-    * EventCategoryID : integer
-    --
-    CategoryName : string
-    Description : string  // e.g., Authentication, Network Activity
+  * CategoryName : string <<PK>>
+  --
+  Description : string
 }
 
 entity "ALERT" {
   * AlertID : integer <<PK>>
   --
   TriggeredAt : datetime
-  RuleID : integer <<FK to ALERT RULE>>
-  Severity : string
-  Description : string
-  Status : string  // e.g., Open, In Progress, Resolved
+  RuleID : integer <<FK to ALERT_RULE>>
+  Status : string  // e.g., Open, Investigating, Resolved
 }
 
 entity "DEVICE" {
@@ -74,15 +80,13 @@ entity "DEVICE" {
 }
 
 entity "INCIDENT_REPORT" {
-    * ReportID : integer <<PK>>
-    --
-    Title : string
-    Description : text
-    CreatedAt : datetime
-    CreatedBy : integer <<FK to USER>>
-    RelatedAlertID : integer <<FK to ALERT>> <<nullable>>
-    Severity : string
-    Status : string  // e.g., Open, Closed, Escalated
+  * ReportID : integer <<PK>>
+  --
+  Title : string
+  Description : text
+  CreatedAt : datetime
+  CreatedBy : integer <<FK to USER>>
+  RelatedAlertID : integer <<FK to ALERT>> <<nullable>>
 }
 
 entity "INCIDENT_EVENT_LINK" {
@@ -105,26 +109,30 @@ entity "ALERT_RULE" {
 }
 
 entity "THREAT_INTEL" {
-    * ThreatID : integer <<PK>>
-    --
-    Indicator : string
-    Type : string
-    Severity : string
-    Description : string
+  * ThreatID : integer <<PK>>
+  --
+  Indicator : string
+  Type : string
+  Severity : string
+  Description : string
 }
 
 'Regular relationships with cardinality'
 INCIDENT_EVENT_LINK }o---|| INCIDENT_REPORT : "REPORTS"
-INCIDENT_EVENT_LINK |o---|| LOG_EVENT : "IS REPORTED"
+INCIDENT_EVENT_LINK }o---|| LOG_EVENT : "IS REPORTED"
 USER ||---o{ LOG_FILE : "UPLOADS"
 USER ||---o{ ALERT_RULE : "CREATES"
 USER ||---o{ INCIDENT_REPORT : "WRITES"
 DEVICE ||---|{ LOG_EVENT : "SENT TO"
 DEVICE ||---|{ LOG_EVENT : "SENT FROM"
-ALERT }o---|| ALERT_RULE : "TRIGGERS"
-ALERT |o---o| INCIDENT_REPORT : "DISCUSSED IN"
-LOG_EVENT }o---o| EVENT_CATEGORY : "BELONGS TO"
-LOG_EVENT }|---o| ALERT : "CAUSED BY"
+ALERT }o---|| ALERT_RULE : "TRIGGERED BY"
+LOG_EVENT }|---o| ALERT : "TRIGGERS"
 THREAT_INTEL ..... ALERT_RULE : "Referenced in condition logic"
+ALERT }o---o{ INCIDENT_REPORT : "DISCUSSED IN"
+LOG_EVENT }o---o| EVENT_CATEGORY : "BELONGS TO"
+RAW_LINE }|---o| DEVICE : "SOURCE DEVICE"
+RAW_LINE }|---o| DEVICE : "DESTINATION DEVICE"
+RAW_LINE }|---o| ACTION : "PERFORMED"
+ACTION }o---o| EVENT_CATEGORY : "BELONGS TO"
 
 @enduml

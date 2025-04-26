@@ -122,6 +122,13 @@ To bring the table into 3NF, the transitive dependency must be removed. Email is
 |------------------------|----------|---------------|
 | Email (PK)             | Username | Password_Hash |
 
+Updated Analysis:
+The table decomposition is actually uneccessary and creates more work if a user changes their email (need to update in more than one place). Therefore, we will move the Username and Password_Hash back to the Users table and simply make Email and Username UNIQUE constraints. This makes the Password_Hash only dependent on keyed columns, since the UNIQUE columns are candidate keys, therefore making it 3NF. Updated table:
+
+| Table: Users           |          |                |                   |               |      |           |           |
+|------------------------|----------|----------------|-------------------|---------------|------|-----------|-----------|
+| UserID (PK)            | Name     | Email (UNIQUE) | Username (UNIQUE) | Password_Hash | Role | CreatedAt | LastLogin |
+
 ---
 
 ## **LOG_FILE**:
@@ -150,9 +157,9 @@ Solution:
 To bring the table into 3NF, the transitive dependencies are removed. SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, and ParsedData are moved to a new table called RAW_LINE. The RawLine is the PK of this table and a FK in the LOG_EVENT table. Lastly, another table is created for ACTION. The Aciton is the PK and is referenced as the FK in the RAW_LINE table. The new ACTION table includes the EventCategoryID.
 
 
-| Table: LogEvent              |             |           |           |         |                        |
-|------------------------------|-------------|-----------|-----------|---------|------------------------|
-| LogEventID (PK)              | FileID (FK) | Timestamp | LogSource | RawLine | AssociatedAlertID (FK) |
+| Table: LogEvent              |             |           |           |              |                        |
+|------------------------------|-------------|-----------|-----------|--------------|------------------------|
+| LogEventID (PK)              | FileID (FK) | Timestamp | LogSource | RawLine (FK) | AssociatedAlertID (FK) |
 
 | Table: RawLine  |       |       |               |       |             |          |         |             |
 |-------------------------------|----------------------|-------------|----------------------------|------------------|-------------|----------|---------|-------------|
@@ -244,3 +251,23 @@ These values are removed since they are already covered in the ALERT table or th
 | ThreatID (PK)         | Indicator | Type | Severity | Description |
 
 ## Boyce-Codd Normal Form (BCNF)
+Whenever column B --> A, then B is unique. 
+
+The table below is not in BCNF:
+
+| Table: UserCredentials |          |               |
+|------------------------|----------|---------------|
+| Email (PK)             | Username | Password_Hash |
+
+This is because Username should also a unique value, since it can be used to sign in instead of an email. Therefore, the column Username determines both Email and Password_Hash. To solve this we simply make Username unique. This makes it a candidate key and unique, which converts the table to BCNF.
+
+| Table: UserCredentials |                   |               |
+|------------------------|-------------------|---------------|
+| Email (PK)             | Username (UNIQUE) | Password_Hash |
+
+---
+
+Updated analysis:
+Since the UserCredentials table has been removed this is no longer neccessary. And the updated Users table is in BCNF since for any column that is determined by another, is determined by a unique column.
+
+Everything else is in BCNF, therefore, all tables are now correctly converted to BCNF and normalization is complete.
