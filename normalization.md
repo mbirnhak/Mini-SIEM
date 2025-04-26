@@ -216,29 +216,31 @@ These values are removed since they are already covered in the ALERT table or th
 |----------------------------|-------|-------------|-----------|------------------------|------------------------------|
 | ReportID (PK)              | Title | Description | CreatedAt | CreatedBy (FK to USER) | RelatedAlertID (FK to ALERT) |
 
-### *INCIDENT_EVENT_LINK:*
-- INCIDENT_EVENT_LINK:
-    - LinkID (PK)
-    - ReportID (FK to INCIDENT_REPORT)
-    - LogEventID (FK to LOG_EVENT)
+---
 
-### *ALERT_RULE:*
-- ALERT_RULE:
-    - RuleID (PK)
-    - Name
-    - Description
-    - Severity
-    - ConditionLogic
-    - IsActive
-    - CreatedBy (FK to USER)
-    - CreatedAt
+## **INCIDENT_EVENT_LINK**:
+- This table is already in 3NF since all columns depend only on the primary key.
 
-### *THREAT_INTEL:*
-- THREAT_INTEL:
-    - ThreatID (PK)
-    - Indicator
-    - Type
-    - Severity
-    - Description
+| Table: Incident_Event_Link  |                                |                                |
+|-----------------------------|--------------------------------|--------------------------------|
+| LinkID (PK)                 | ReportID (FK to INCIDENT_REPORT) | LogEventID (FK to LOG_EVENT) |
+
+---
+
+## **ALERT_RULE**:
+- This table is already in 3NF since all columns depend only on the primary key.
+
+| Table: Alert_Rule         |             |          |                |          |                        |           |
+|---------------------------|-------------|----------|----------------|----------|------------------------|-----------|
+| RuleID (PK)        | Name | Description | Severity | ConditionLogic | IsActive | CreatedBy (FK to USER) | CreatedAt |
+
+---
+
+## **THREAT_INTEL**:
+- This table is already in 3NF since all columns depend only on the primary key.
+
+| Table: Threat_Intel   |           |      |          |             |
+|-----------------------|-----------|------|----------|-------------|
+| ThreatID (PK)         | Indicator | Type | Severity | Description |
 
 ## Boyce-Codd Normal Form (BCNF)
