@@ -226,11 +226,11 @@ These values are removed since they are already covered in the ALERT table or th
 ---
 
 ## **INCIDENT_EVENT_LINK**:
-- This table is already in 3NF since all columns depend only on the primary key.
+- This table is already in 3NF since all columns depend only on the primary key. However, we will remove the LinkID and create a composite key from ReportID and LogEventID since the LinkID is uneccessary.
 
-| Table: Incident_Event_Link  |                                |                                |
-|-----------------------------|--------------------------------|--------------------------------|
-| LinkID (PK)                 | ReportID (FK to INCIDENT_REPORT) | LogEventID (FK to LOG_EVENT) |
+| Table: Incident_Event_Link           |                                  |
+|--------------------------------------|----------------------------------|
+| ReportID (PK, FK to INCIDENT_REPORT) | LogEventID (PK, FK to LOG_EVENT) |
 
 ---
 

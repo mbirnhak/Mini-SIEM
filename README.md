@@ -200,9 +200,8 @@ Remove outdated logs, clear false positives
 
 | Column              | Description                                              |
 |---------------------|----------------------------------------------------------|
-| LinkID (PK)          | Unique identifier for the link entry                    |
-| ReportID (FK)        | Reference to the associated incident report             |
-| LogEventID (FK)      | Reference to the related log event                       |
+| ReportID (PK, FK)        | Reference to the associated incident report             |
+| LogEventID (PK, FK)      | Reference to the related log event                       |
 
 ---
 

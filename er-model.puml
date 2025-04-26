@@ -90,10 +90,8 @@ entity "INCIDENT_REPORT" {
 }
 
 entity "INCIDENT_EVENT_LINK" {
-  * LinkID : integer <<PK>>
-  --
-  ReportID : integer <<FK to INCIDENT_REPORT>>
-  LogEventID : integer <<FK to LOG_EVENT>>
+  * ReportID : integer <<PK>> <<FK to INCIDENT_REPORT>>
+  * LogEventID : integer <<PK>> <<FK to LOG_EVENT>>
 }
 
 entity "ALERT_RULE" {
