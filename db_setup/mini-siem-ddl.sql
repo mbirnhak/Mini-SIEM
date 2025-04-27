@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS User (
     UserID INTEGER PRIMARY KEY AUTOINCREMENT,
     Name VARCHAR(100),
-    Email VARCHAR(100) UNIQUE,
-    Username VARCHAR(50) UNIQUE,
-    Password_Hash VARCHAR(255),
-    Role VARCHAR(50),  -- e.g. Admin, Analyst
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    Password_Hash VARCHAR(255) NOT NULL,
+    Role VARCHAR(50) CHECK (Role IN ('Admin', 'Analyst')),
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     LastLogin DATETIME
 );
@@ -16,21 +16,28 @@ CREATE TABLE IF NOT EXISTS LogFile (
     SourceType VARCHAR(50),  -- e.g., Firewall, Server
     Filename VARCHAR(100),
     UploadTime DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Status VARCHAR(50),  -- e.g., Processed, Failed
+    Status VARCHAR(50) CHECK (Status IN ('Uploaded', 'Pending', 'Failed')),  -- e.g., Processed, Failed
     RawContent TEXT,
     FOREIGN KEY (UploadedBy) REFERENCES User(UserID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS LogEvent (
     LogEventID INTEGER PRIMARY KEY AUTOINCREMENT,
-    FileID INTEGER,  -- FK to LOG_FILE
+    FileID INTEGER NOT NULL,  -- FK to LOG_FILE
     Timestamp DATETIME,
-    LogSource VARCHAR(100),
-    RawLine TEXT, -- FK to RAW_LINE
+    RawLine TEXT NOT NULL, -- FK to RAW_LINE
     AssociatedAlertID INTEGER,  -- FK to ALERT
-    FOREIGN KEY (FileID) REFERENCES LogFile(FileID),
-    FOREIGN KEY (RawLine) REFERENCES RawLine(RawLine),
+    FOREIGN KEY (FileID) REFERENCES LogFile(FileID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (RawLine) REFERENCES RawLine(RawLine)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     FOREIGN KEY (AssociatedAlertID) REFERENCES Alert(AlertID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS RawLine (
@@ -40,12 +47,17 @@ CREATE TABLE IF NOT EXISTS RawLine (
     DestinationDeviceID INTEGER,  -- FK to DEVICE
     DestinationPort INTEGER,
     Action VARCHAR(100),  -- FK to ACTION
-    Severity VARCHAR(50),
     Message TEXT,
     ParsedData JSON,
-    FOREIGN KEY (SourceDeviceID) REFERENCES Device(DeviceID),
-    FOREIGN KEY (DestinationDeviceID) REFERENCES Device(DeviceID),
+    FOREIGN KEY (SourceDeviceID) REFERENCES Device(DeviceID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
+    FOREIGN KEY (DestinationDeviceID) REFERENCES Device(DeviceID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE,
     FOREIGN KEY (Action) REFERENCES Action(Action)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Action (
@@ -62,8 +74,8 @@ CREATE TABLE IF NOT EXISTS EventCategory (
 CREATE TABLE IF NOT EXISTS Alert (
     AlertID INTEGER PRIMARY KEY AUTOINCREMENT,
     TriggeredAt DATETIME,
-    RuleID INTEGER,  -- FK to ALERT_RULE
-    Status VARCHAR(50),  -- e.g., Open, Investigating, Resolved
+    RuleID INTEGER NOT NULL,  -- FK to ALERT_RULE
+    Status VARCHAR(50) NOT NULL,  -- e.g., Open, Investigating, Resolved
     FOREIGN KEY (RuleID) REFERENCES AlertRule(RuleID)
 );
 
@@ -97,11 +109,11 @@ CREATE TABLE IF NOT EXISTS IncidentEventLink (
 
 CREATE TABLE IF NOT EXISTS AlertRule (
     RuleID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Name VARCHAR(100),
+    Name VARCHAR(100) NOT NULL,
     Description TEXT,
-    Severity VARCHAR(50),
-    ConditionLogic JSON,
-    IsActive BOOLEAN,  -- Whether to use the rule or not
+    Severity VARCHAR(50) NOT NULL,
+    ConditionLogic JSON NOT NULL, -- JSON structure defining the rule logic
+    IsActive BOOLEAN NOT NULL,  -- Whether to use the rule or not
     CreatedBy INTEGER,  -- FK to USER
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (CreatedBy) REFERENCES User(UserID)
@@ -109,8 +121,8 @@ CREATE TABLE IF NOT EXISTS AlertRule (
 
 CREATE TABLE IF NOT EXISTS ThreatIntel (
     ThreatID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Indicator VARCHAR(100),
-    Type VARCHAR(50),
-    Severity VARCHAR(50),
+    Indicator VARCHAR(100) NOT NULL, -- e.g., 192.168.1.1 or malicious.com
+    Type VARCHAR(50) NOT NULL, -- e.g., IP, Domain, URL
+    Severity VARCHAR(50) NOT NULL,
     Description TEXT
 );

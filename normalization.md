@@ -148,22 +148,21 @@ To bring the table into 3NF, the transitive dependency must be removed. The fiel
 ---
 
 ## **LOG_EVENT**:
-- The table is not in 3NF, because SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID depend on RawLine. And EventCategoryID depends on Action.
+- The table is not in 3NF, because SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID depend on RawLine. EventCategoryID depends on Action. And LogSource depends on FileID.
 
 Analysis: 
-RawLine determines SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID. Furthermore, Action determine EventCategoryID since the event category something falls into is determined by the specific action that occurred. For example, the Actoin: "login failed" determines the EventCategory: "Authentication".
+RawLine determines SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, ParsedData, and EventCategoryID. Furthermore, Action determine EventCategoryID since the event category something falls into is determined by the specific action that occurred. For example, the Action: "login failed" determines the EventCategory: "Authentication". LogSource depends on FileID and is referenced within the LogFile table itself.
 
 Solution:
-To bring the table into 3NF, the transitive dependencies are removed. SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, and ParsedData are moved to a new table called RAW_LINE. The RawLine is the PK of this table and a FK in the LOG_EVENT table. Lastly, another table is created for ACTION. The Aciton is the PK and is referenced as the FK in the RAW_LINE table. The new ACTION table includes the EventCategoryID.
+To bring the table into 3NF, the transitive dependencies are removed. SourceDeviceID, SourcePort, DestinationDeviceID, DestinationPort, Action, Severity, Message, and ParsedData are moved to a new table called RAW_LINE. The RawLine is the PK of this table and a FK in the LOG_EVENT table. Lastly, another table is created for ACTION. The Aciton is the PK and is referenced as the FK in the RAW_LINE table. The new ACTION table includes the EventCategoryID. Lastly, LogSource is removed since it is already covered in the LogFile table. Severity is also removed since it is determined by Alert Rules, whereas these tables are for showing the data in the log.
 
+| Table: LogEvent              |             |           |              |                        |
+|------------------------------|-------------|-----------|--------------|------------------------|
+| LogEventID (PK)              | FileID (FK) | Timestamp | RawLine (FK) | AssociatedAlertID (FK) |
 
-| Table: LogEvent              |             |           |           |              |                        |
-|------------------------------|-------------|-----------|-----------|--------------|------------------------|
-| LogEventID (PK)              | FileID (FK) | Timestamp | LogSource | RawLine (FK) | AssociatedAlertID (FK) |
-
-| Table: RawLine  |       |       |               |       |             |          |         |             |
-|-------------------------------|----------------------|-------------|----------------------------|------------------|-------------|----------|---------|-------------|
-| RawLine (PK)                  | SourceDeviceID (FK)  | SourcePort  | DestinationDeviceID (FK)   | DestinationPort  | Action (FK) | Severity | Message | ParsedData  |
+| Table: RawLine  |       |       |               |       |             |         |             |
+|-------------------------------|----------------------|-------------|----------------------------|------------------|-------------|---------|-------------|
+| RawLine (PK)                  | SourceDeviceID (FK)  | SourcePort  | DestinationDeviceID (FK)   | DestinationPort  | Action (FK) | Message | ParsedData  |
 
 | Table: Action       |                      |
 |---------------------|----------------------|

@@ -119,7 +119,6 @@ Remove outdated logs, clear false positives
 | LogEventID (PK)     | Unique identifier for each individual log event          |
 | FileID (FK)         | Reference to the log file that contains this event       |
 | Timestamp           | Date and time when the log event occurred                |
-| LogSource           | Identifier or name of the system that generated the event|
 | RawLine (FK)        | Reference to the raw log line                             |
 | AssociatedAlertID (FK) | Reference to an alert generated from this event, if any |
 
@@ -135,7 +134,6 @@ Remove outdated logs, clear false positives
 | DestinationDeviceID (FK) | Reference to the destination device involved in the event |
 | DestinationPort      | Network port on the destination device                   |
 | Action (FK)          | Reference to the action that occurred                    |
-| Severity             | Severity level of the event (e.g., Low, Medium, High)    |
 | Message              | Human-readable description or summary of the event      |
 | ParsedData           | Structured data extracted from the raw log line          |
 

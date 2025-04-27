@@ -1,4 +1,4 @@
-@startuml
+@startuml SIEM ER Model
 
 skinparam linetype ortho
 
@@ -31,7 +31,6 @@ entity "LOG_EVENT" {
   --
   FileID : integer <<FK to LOG_FILE>>
   Timestamp : datetime
-  LogSource : string
   RawLine : text <<FK to RAW_LINE>>
   AssociatedAlertID : integer <<FK to ALERT>>  // nullable
 }
@@ -44,7 +43,6 @@ entity "RAW_LINE" {
   DestinationDeviceID : integer <<FK to DEVICE>>
   DestinationPort : integer
   Action : string <<FK to ACTION>>
-  Severity : string
   Message : string
   ParsedData : json
 }
