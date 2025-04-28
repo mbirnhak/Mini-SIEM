@@ -230,12 +230,28 @@ Remove outdated logs, clear false positives
 
 ---
 
+> **Note**: I was going to add support for hypertables on LogEvent and Alert table to increase query speed on time-series data. However, timescaledb does not support foreign key references to hypertables so this is omitted.
 
-## Setup PostgreSQL Locally with Docket
+
+# Run Locally
+
+## Step 1: Set Up PostgreSQL with Docker
+
+First, start a PostgreSQL container locally using Docker:
+
 ```bash
 docker run -p 5432:5432 \
- -e POSTGRES_PASSWORD=postgres \
- -e POSTGRES_USER=postgres \
- -e POSTGRES_DB=postgres \
-    postgres:17
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=postgres \
+  postgres:17
 ```
+## Step 2: Clone the Repository
+
+Clone the project repository to your local machine:
+
+```bash
+git clone https://github.com/mbirnhak/Mini-SIEM.git
+cd Mini-SIEM
+```
+## Step 3: 

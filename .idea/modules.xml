@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Mini-SIEM.iml" filepath="$PROJECT_DIR$/.idea/Mini-SIEM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/siem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/siem.main.iml" />
     </modules>
   </component>
 </project>
