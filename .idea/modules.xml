@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Mini-SIEM.iml" filepath="$PROJECT_DIR$/.idea/Mini-SIEM.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/siem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/siem.main.iml" />
-    </modules>
-  </component>
-</project>
