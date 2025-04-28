@@ -1,3 +1,6 @@
+-- Enable TimescaleDB extension
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+
 CREATE TABLE IF NOT EXISTS "User" (
     UserID SERIAL PRIMARY KEY,
     Name VARCHAR(100),

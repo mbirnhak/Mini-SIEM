@@ -78,7 +78,7 @@ Remove outdated logs, clear false positives
 - THREAT_INTEL
 
 ## ER Diagram
-![alt text](image-1.png)
+![alt text](image.png)
 
 # Database Schema (Updated for Normalized Tables)
 
