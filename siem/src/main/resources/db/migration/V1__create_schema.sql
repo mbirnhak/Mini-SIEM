@@ -163,22 +163,36 @@ CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
     tsvector_update_trigger(search_vector, 'pg_catalog.english', Message);
 CREATE INDEX idx_rawline_search ON RawLine USING GIN (search_vector);
 
--- Convert LogFile to hypertable (UploadTime is the time column)
-SELECT create_hypertable('LogFile', 'UploadTime', if_not_exists => TRUE);
--- Convert LogEvent to hypertable (Timestamp is the time column)
-SELECT create_hypertable('LogEvent', 'Timestamp', if_not_exists => TRUE);
--- Convert Alert to hypertable (TriggeredAt is the time column)
-SELECT create_hypertable('Alert', 'TriggeredAt', if_not_exists => TRUE);
--- IncidentReport might not need hypertable unless you have thousands daily, but if yes:
-SELECT create_hypertable('IncidentReport', 'CreatedAt', if_not_exists => TRUE);
+-- Hypertables do not support FOREIGN KEY references to them. Therefore, we cannot use them.
+-- -- Convert LogFile to hypertable (UploadTime is the time column)
+-- SELECT create_hypertable('LogFile', 'uploadtime', if_not_exists => TRUE);
+-- -- Convert LogEvent to hypertable (Timestamp is the time column)
+-- SELECT create_hypertable('LogEvent', 'timestamp', if_not_exists => TRUE);
+-- -- Convert Alert to hypertable (TriggeredAt is the time column)
+-- SELECT create_hypertable('Alert', 'triggeredat', if_not_exists => TRUE);
 
--- Create Materialized View for counting the log events per hour
-CREATE MATERIALIZED VIEW logevent_count_per_hour
-WITH (timescaledb.continuous) AS
+-- Create standard Materialized View for counting the log events per hour
+-- (removed timescaledb.continuous since we're not using hypertables)
+CREATE MATERIALIZED VIEW logevent_count_per_hour AS
 SELECT
-    time_bucket('1 hour', "Timestamp") AS bucket,
+    time_bucket('1 hour', "timestamp") AS bucket,
     COUNT(*) AS logs_count,
-    AVG(LENGTH(Message)) AS avg_message_length
-FROM LogEvent
+    AVG(LENGTH(r.message)) AS avg_message_length
+FROM LogEvent le
+         JOIN RawLine r ON le.RawLine = r.RawLine
 GROUP BY bucket
-    WITH NO DATA;
+WITH NO DATA;
+
+-- Add refresh function for materialized views
+CREATE OR REPLACE FUNCTION refresh_materialized_views()
+    RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW alert_statistics;
+    REFRESH MATERIALIZED VIEW logevent_count_per_hour;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Add specialized time-series indexes
+CREATE INDEX idx_logevent_timestamp ON LogEvent USING BRIN (timestamp);
+CREATE INDEX idx_alert_triggered_time ON Alert USING BRIN (TriggeredAt);
+CREATE INDEX idx_logevent_file_time ON LogEvent (FileID, timestamp);
