@@ -47,10 +47,10 @@ public class Rawline {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> parseddata;
 
-/*
- TODO [Reverse Engineering] create field to map the 'search_vector' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
+
+// TODO [Reverse Engineering] create field to map the 'search_vector' column
+// Available actions: Define target Java type | Uncomment as is | Remove column mapping
     @Column(name = "search_vector", columnDefinition = "tsvector")
-    private Object searchVector;
-*/
+    private String searchVector;
+
 }
