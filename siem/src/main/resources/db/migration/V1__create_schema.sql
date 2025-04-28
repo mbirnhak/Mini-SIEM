@@ -143,3 +143,42 @@ CREATE TABLE IF NOT EXISTS ThreatIntel (
     Severity VARCHAR(50) NOT NULL CHECK (Severity IN ('Low', 'Medium', 'High')),
     Description TEXT
 );
+
+-- Materialized view for alert statistics
+CREATE MATERIALIZED VIEW alert_statistics AS
+SELECT
+    ar.Severity,
+    COUNT(a.AlertID) as alert_count,
+    AVG(EXTRACT(EPOCH FROM (a.TriggeredAt - le.Timestamp))) as avg_detection_time
+FROM Alert a
+         JOIN AlertRule ar ON a.RuleID = ar.RuleID
+         JOIN LogEvent le ON a.AlertID = le.AssociatedAlertID
+GROUP BY ar.Severity;
+CREATE UNIQUE INDEX ON alert_statistics (Severity);
+
+-- Add full-text search capabilities to raw lines
+ALTER TABLE RawLine ADD COLUMN search_vector tsvector;
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE
+    ON RawLine FOR EACH ROW EXECUTE FUNCTION
+    tsvector_update_trigger(search_vector, 'pg_catalog.english', Message);
+CREATE INDEX idx_rawline_search ON RawLine USING GIN (search_vector);
+
+-- Convert LogFile to hypertable (UploadTime is the time column)
+SELECT create_hypertable('LogFile', 'UploadTime', if_not_exists => TRUE);
+-- Convert LogEvent to hypertable (Timestamp is the time column)
+SELECT create_hypertable('LogEvent', 'Timestamp', if_not_exists => TRUE);
+-- Convert Alert to hypertable (TriggeredAt is the time column)
+SELECT create_hypertable('Alert', 'TriggeredAt', if_not_exists => TRUE);
+-- IncidentReport might not need hypertable unless you have thousands daily, but if yes:
+SELECT create_hypertable('IncidentReport', 'CreatedAt', if_not_exists => TRUE);
+
+-- Create Materialized View for counting the log events per hour
+CREATE MATERIALIZED VIEW logevent_count_per_hour
+WITH (timescaledb.continuous) AS
+SELECT
+    time_bucket('1 hour', "Timestamp") AS bucket,
+    COUNT(*) AS logs_count,
+    AVG(LENGTH(Message)) AS avg_message_length
+FROM LogEvent
+GROUP BY bucket
+    WITH NO DATA;
