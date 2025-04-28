@@ -229,3 +229,13 @@ Remove outdated logs, clear false positives
 | Description          | Additional context or background about the threat       |
 
 ---
+
+
+## Setup PostgreSQL Locally with Docket
+```bash
+docker run -p 5432:5432 \
+ -e POSTGRES_PASSWORD=postgres \
+ -e POSTGRES_USER=postgres \
+ -e POSTGRES_DB=postgres \
+    postgres:17
+```
