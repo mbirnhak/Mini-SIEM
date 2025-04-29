@@ -1,4 +1,4 @@
-package edu.trincoll.siem;
+package edu.trincoll.siem.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

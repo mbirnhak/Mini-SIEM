@@ -1,5 +1,96 @@
 package edu.trincoll.siem.Controller;
 
-// Handles: Device features
+import edu.trincoll.siem.Model.Device;
+import edu.trincoll.siem.Service.DeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/devices")
 public class DeviceController {
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @GetMapping
+    public List<Device> getAllDevices() {
+        return deviceService.getAllDevices();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Device> getDeviceById(@PathVariable Integer id) {
+        return deviceService.getDeviceById(id);
+    }
+
+    @GetMapping("/ip")
+    public Optional<Device> getDeviceByIpAddress(@RequestParam String ip) throws UnknownHostException {
+        InetAddress ipAddress = InetAddress.getByName(ip);
+        return deviceService.getDeviceByIpAddress(ipAddress);
+    }
+
+    @GetMapping("/hostname")
+    public Optional<Device> getDeviceByHostname(@RequestParam String hostname) {
+        return deviceService.getDeviceByHostname(hostname);
+    }
+
+    @GetMapping("/search")
+    public List<Device> searchDevices(@RequestParam String query) {
+        return deviceService.searchDevices(query);
+    }
+
+    @GetMapping("/os")
+    public List<Device> getDevicesByOperatingSystem(@RequestParam String os) {
+        return deviceService.getDevicesByOperatingSystem(os);
+    }
+
+    @GetMapping("/location")
+    public List<Device> getDevicesByLocation(@RequestParam String location) {
+        return deviceService.getDevicesByLocation(location);
+    }
+
+    @GetMapping("/type")
+    public List<Device> getDevicesByDeviceType(@RequestParam String type) {
+        return deviceService.getDevicesByDeviceType(type);
+    }
+
+    @GetMapping("/subnet")
+    public List<Device> getDevicesBySubnet(@RequestParam String subnet) {
+        return deviceService.getDevicesBySubnet(subnet);
+    }
+
+    @GetMapping("/count/os")
+    public List<Object[]> countByOperatingSystem() {
+        return deviceService.countDevicesByOperatingSystem();
+    }
+
+    @GetMapping("/count/location")
+    public List<Object[]> countByLocation() {
+        return deviceService.countDevicesByLocation();
+    }
+
+    @GetMapping("/count/type")
+    public List<Object[]> countByDeviceType() {
+        return deviceService.countDevicesByDeviceType();
+    }
+
+    @GetMapping("/filter")
+    public List<Device> getDevicesByLocationAndType(@RequestParam String location,
+                                                    @RequestParam String type) {
+        return deviceService.getDevicesByLocationAndType(location, type);
+    }
+
+    @PostMapping
+    public Device createDevice(@RequestBody Device device) {
+        return deviceService.saveDevice(device);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteDevice(@PathVariable Integer id) {
+        deviceService.deleteDeviceById(id);
+    }
 }
