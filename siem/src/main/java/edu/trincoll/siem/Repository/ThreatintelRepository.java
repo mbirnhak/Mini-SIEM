@@ -75,9 +75,9 @@ public interface ThreatintelRepository extends JpaRepository<Threatintel, Intege
     // Find top threats by severity (most severe first)
     @Query("SELECT t FROM Threatintel t ORDER BY " +
             "CASE t.severity " +
-            "WHEN edu.trincoll.siem.Model.Enums.Severity.HIGH THEN 1 " +
-            "WHEN edu.trincoll.siem.Model.Enums.Severity.MEDIUM THEN 2 " +
-            "WHEN edu.trincoll.siem.Model.Enums.Severity.LOW THEN 3 " +
+            "WHEN edu.trincoll.siem.Model.Enums.Severity.High THEN 1 " +
+            "WHEN edu.trincoll.siem.Model.Enums.Severity.Medium THEN 2 " +
+            "WHEN edu.trincoll.siem.Model.Enums.Severity.Low THEN 3 " +
             "ELSE 4 END")
     List<Threatintel> findTopThreats(org.springframework.data.domain.Pageable pageable);
 }

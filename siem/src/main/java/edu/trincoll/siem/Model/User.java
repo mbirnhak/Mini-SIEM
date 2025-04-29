@@ -1,5 +1,6 @@
 package edu.trincoll.siem.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.trincoll.siem.Model.Enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,9 +12,10 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"User\"")
+@Table(name = "\"user\"")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userid", nullable = false)
     private Integer id;
 
@@ -26,6 +28,7 @@ public class User {
     @Column(name = "username", nullable = false, length = 50)
     private String username;
 
+    @JsonIgnore // This annotation prevents the field from being included in JSON responses
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -33,8 +36,8 @@ public class User {
     @Column(name = "role", length = 50)
     private Role role;
 
+    @Column(name = "createdat", updatable = false, insertable = false)
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "createdat")
     private Instant createdat;
 
     @Column(name = "lastlogin")
