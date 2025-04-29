@@ -19,21 +19,21 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <!-- Dashboard Section -->
 <section id="dashboard" style="display: none;">
   <h2>Latest Events Dashboard</h2>
-
-  <div class="dashboard-controls">
-    <button id="refresh-events">Refresh</button>
-    <select id="limit-select">
-      <option value="10">10 events</option>
-      <option value="25">25 events</option>
-      <option value="50">50 events</option>
-    </select>
-  </div>
-
-  <div id="user-controls">
-    <button id="logout-button" style="background-color: #f39c12;">Logout</button>
-    <button id="delete-account-button" style="background-color: #e74c3c;">Delete Account</button>
-  </div>
-
+<nav id="top-nav" class="top-nav">
+  <button class="nav-tab" data-tab="devices">Devices</button>
+  <button class="nav-tab" data-tab="log-files">Log Files</button>
+  <button class="nav-tab" data-tab="log-events">Log Events</button>
+  <button class="nav-tab" data-tab="alerts">Alerts</button>
+  <button class="nav-tab" data-tab="alert-rules">Alert Rules</button>
+  <button class="nav-tab" data-tab="incident-reports">Incident Reports</button>
+  <button class="nav-tab" data-tab="threat-intel">Threat Intelligence</button>
+  <button class="nav-tab" data-tab="actions">Actions</button>
+  <button class="nav-tab" data-tab="event-categories">Event Categories</button>
+</nav>
+<div id="tab-content">
+  <div class="tab-panel" id="tab-devices">Loading Devices...</div>
+  <div class="tab-panel" id="tab-log-files" style="display: none;">Loading Log Files...</div>
+  <div class="tab-panel" id="tab-log-events" style="display: none;">
   <div id="events-table-container">
     <table id="events-table">
       <thead>
@@ -51,6 +51,27 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <!-- Events will be loaded here -->
       </tbody>
     </table>
+  </div>
+  </div>
+  <div class="tab-panel" id="tab-alerts" style="display: none;">Loading Alerts...</div>
+  <div class="tab-panel" id="tab-alert-rules" style="display: none;">Loading Alert Rules...</div>
+  <div class="tab-panel" id="tab-incident-reports" style="display: none;">Loading Incidents...</div>
+  <div class="tab-panel" id="tab-threat-intel" style="display: none;">Loading Threat Intelligence...</div>
+  <div class="tab-panel" id="tab-actions" style="display: none;">Loading Actions...</div>
+  <div class="tab-panel" id="tab-event-categories" style="display: none;">Loading Event Categories...</div>
+</div>
+  <div class="dashboard-controls">
+    <button id="refresh-events">Refresh</button>
+    <select id="limit-select">
+      <option value="10">10 events</option>
+      <option value="25">25 events</option>
+      <option value="50">50 events</option>
+    </select>
+  </div>
+
+  <div id="user-controls">
+    <button id="logout-button" style="background-color: #f39c12;">Logout</button>
+    <button id="delete-account-button" style="background-color: #e74c3c;">Delete Account</button>
   </div>
 </section>
 
@@ -95,6 +116,21 @@ const dashboard = document.getElementById('dashboard') as HTMLElement
 const refreshBtn = document.getElementById('refresh-events')
 const limitSelect = document.getElementById('limit-select') as HTMLSelectElement
 const eventsTableBody = document.getElementById('events-body') as HTMLElement
+
+// Navigation bar
+const navTabs = document.querySelectorAll('.nav-tab');
+const tabPanels = document.querySelectorAll('.tab-panel');
+
+navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const selectedTab = tab.getAttribute('data-tab');
+        tabPanels.forEach(panel => {
+            panel.style.display = 'none';
+        });
+        document.getElementById(`tab-${selectedTab}`)!.style.display = 'block';
+    });
+});
+
 
 // Open login modal
 loginBtn?.addEventListener('click', () => {
@@ -311,6 +347,54 @@ function displayEvents(events) {
         eventsTableBody.appendChild(row)
     })
 }
+
+// Add this function to fetch devices from your backend and update the DOM
+async function loadDevices() {
+    try {
+        const response = await fetch(`${BASE_URL}/devices`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch devices');
+        }
+        const devices = await response.json();
+
+        const devicesTable = document.getElementById('tab-devices');
+        devicesTable.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Hostname</th>
+            <th>IP Address</th>
+            <th>Operating System</th>
+            <th>Location</th>
+            <th>Device Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${devices.map((device: any) => `
+            <tr>
+              <td>${device.id}</td>
+              <td>${device.hostname}</td>
+              <td>${device.ipaddress}</td>
+              <td>${device.operatingsystem}</td>
+              <td>${device.location}</td>
+              <td>${device.devicetype}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// When the "Devices" tab is clicked, load the devices
+document.querySelector<HTMLButtonElement>('[data-tab="devices"]')?.addEventListener('click', () => {
+    const devicesTab = document.getElementById('tab-devices')!;
+    devicesTab.style.display = 'block';
+    loadDevices();  // Fetch and display devices
+});
 
 // Add event listener for refresh button
 refreshBtn?.addEventListener('click', fetchLatestEvents)
