@@ -254,4 +254,23 @@ Clone the project repository to your local machine:
 git clone https://github.com/mbirnhak/Mini-SIEM.git
 cd Mini-SIEM
 ```
-## Step 3: 
+## Step 3: Backend Setup
+
+```bash
+cd siem
+./gradlew bootRun
+```
+
+## Step 4: Frontend Setup
+
+Setup frontend and install dependencies.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Step 5: Open Application
+
+Navigate to `http://localhost:5173`
