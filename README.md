@@ -9,6 +9,48 @@ This project aims to help cybersecurity analysts collect, store, analyze, and vi
 
 The system will collect logs from sources such as web servers, firewalls, system event logs, and authentication records. Logs will be parsed, categorized, and stored in a structured database to enable efficient searching, filtering, and visualization. Users will be able to view real-time log streams, apply filters to sort logs by source, severity, or time range, and generate reports on specific security events.
 
+# Run Locally
+
+## Step 1: Set Up PostgreSQL with Docker
+
+First, start a PostgreSQL container locally using Docker:
+
+```bash
+docker run -p 5432:5432 \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=postgres \
+  postgres:17
+```
+## Step 2: Clone the Repository
+
+Clone the project repository to your local machine:
+
+```bash
+git clone https://github.com/mbirnhak/Mini-SIEM.git
+cd Mini-SIEM
+```
+## Step 3: Backend Setup
+
+```bash
+cd siem
+./gradlew bootRun
+```
+
+## Step 4: Frontend Setup
+
+Setup frontend and install dependencies.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Step 5: Open Application
+
+Navigate to `http://localhost:5173`
+
 ## Proposed Entities  
 
 The proposed system will include several key entities to manage log collection, storage, and visualization effectively:  
@@ -231,46 +273,3 @@ Remove outdated logs, clear false positives
 ---
 
 > **Note**: I was going to add support for hypertables on LogEvent and Alert table to increase query speed on time-series data. However, timescaledb does not support foreign key references to hypertables so this is omitted.
-
-
-# Run Locally
-
-## Step 1: Set Up PostgreSQL with Docker
-
-First, start a PostgreSQL container locally using Docker:
-
-```bash
-docker run -p 5432:5432 \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_DB=postgres \
-  postgres:17
-```
-## Step 2: Clone the Repository
-
-Clone the project repository to your local machine:
-
-```bash
-git clone https://github.com/mbirnhak/Mini-SIEM.git
-cd Mini-SIEM
-```
-## Step 3: Backend Setup
-
-```bash
-cd siem
-./gradlew bootRun
-```
-
-## Step 4: Frontend Setup
-
-Setup frontend and install dependencies.
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## Step 5: Open Application
-
-Navigate to `http://localhost:5173`
