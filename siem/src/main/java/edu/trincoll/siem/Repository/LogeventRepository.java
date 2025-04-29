@@ -49,13 +49,9 @@ public interface LogeventRepository extends JpaRepository<Logevent, Integer> {
     @Query("SELECT l.associatedalertid.id, COUNT(l) FROM Logevent l WHERE l.associatedalertid IS NOT NULL GROUP BY l.associatedalertid.id")
     List<Object[]> countEventsByAlert();
 
-    // Count events by time period (hourly)
-    @Query("SELECT FUNCTION('HOUR', l.timestamp) as hourOfDay, COUNT(l) " +
-            "FROM Logevent l " +
-            "WHERE l.timestamp BETWEEN :startTime AND :endTime " +
-            "GROUP BY FUNCTION('HOUR', l.timestamp) " +
-            "ORDER BY l.timestamp")
-    List<Object[]> countEventsByHour(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
+    // Query to fetch log event count per hour from materialized view
+    @Query(value = "SELECT bucket, logs_count, avg_message_length FROM logevent_count_per_hour WHERE bucket BETWEEN :startTime AND :endTime", nativeQuery = true)
+    List<Object[]> getLogEventCountPerHour(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
     // Find latest events (paginated)
     @Query("SELECT l FROM Logevent l ORDER BY l.timestamp DESC")
@@ -65,12 +61,11 @@ public interface LogeventRepository extends JpaRepository<Logevent, Integer> {
     @Query("SELECT l FROM Logevent l WHERE LOWER(l.rawline) LIKE LOWER(CONCAT('%', :content, '%'))")
     List<Logevent> findByRawlineContentContaining(@Param("content") String content);
 
-    // Get event count over time (for time series visualization)
-    @Query("SELECT FUNCTION('DATE_TRUNC', 'hour', l.timestamp) as timeSlot, COUNT(l) " +
-            "FROM Logevent l " +
-            "WHERE l.timestamp BETWEEN :startTime AND :endTime " +
-            "GROUP BY FUNCTION('DATE_TRUNC', 'hour', l.timestamp) " +
-            "ORDER BY l.timestamp")
+    @Query(value = "SELECT date_trunc('hour', l1_0.\"timestamp\") AS truncated_timestamp, count(l1_0.logeventid) " +
+            "FROM logevent l1_0 " +
+            "WHERE l1_0.\"timestamp\" BETWEEN :startTime AND :endTime " +
+            "GROUP BY truncated_timestamp " +
+            "ORDER BY truncated_timestamp", nativeQuery = true)
     List<Object[]> getEventCountTimeSeries(@Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
 
     // Find events by file and alert status

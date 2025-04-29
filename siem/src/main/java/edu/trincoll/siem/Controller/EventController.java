@@ -204,6 +204,16 @@ public class EventController {
         return logeventService.getLatestEvents(limit);
     }
 
+    @GetMapping("/event-count")
+    public List<Object[]> getEventCountTimeSeries(@RequestParam Instant startTime, @RequestParam Instant endTime) {
+        return logeventService.getEventCountTimeSeries(startTime, endTime);
+    }
+
+    @GetMapping("/event-count/materialized")
+    public List<Object[]> getEventPerHour(@RequestParam Instant startTime, @RequestParam Instant endTime) {
+        return logeventService.getEventCountFromMaterializedView(startTime, endTime);
+    }
+
     // Create a new event
     @PostMapping("/logevents")
     public ResponseEntity<Logevent> createEvent(@RequestBody Logevent event) {

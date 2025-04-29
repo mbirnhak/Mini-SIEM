@@ -77,4 +77,9 @@ public class LogeventService {
     public List<Object[]> countEventsByFile() {
         return logeventRepository.countEventsByFile();
     }
+
+    public List<Object[]> getEventCountFromMaterializedView(Instant startTime, Instant endTime) {
+        return logeventRepository.getLogEventCountPerHour(startTime, endTime);
+    }
+
 }
