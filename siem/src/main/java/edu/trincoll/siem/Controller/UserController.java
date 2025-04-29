@@ -25,6 +25,22 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+
+        // Authenticate the user
+        User authenticatedUser = userService.authenticateUser(username, password);
+        if (authenticatedUser != null) {
+            // Return user information if authenticated
+            return ResponseEntity.ok(authenticatedUser);
+        } else {
+            // Return an error message if authentication fails
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());

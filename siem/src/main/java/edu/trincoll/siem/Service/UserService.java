@@ -1,5 +1,6 @@
 package edu.trincoll.siem.Service;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import edu.trincoll.siem.Model.User;
 import edu.trincoll.siem.Model.Enums.Role;
 import edu.trincoll.siem.Repository.UserRepository;
@@ -20,6 +21,38 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+    /**
+     * Authenticate a user by username and password.
+     * @param username The username to authenticate.
+     * @param password The plain password entered by the user.
+     * @return The authenticated User if credentials are valid, null otherwise.
+     */
+    public User authenticateUser(String username, String password) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // Use PostgreSQL's crypt function to verify the password.
+            String hashedPassword = user.getPasswordHash();
+            boolean isPasswordValid = checkPassword(password, hashedPassword);
+            if (isPasswordValid) {
+                return user;
+            }
+        }
+        return null; // Invalid credentials
+    }
+
+    /**
+     * Compares the plain password with the hashed password.
+     * @param plainPassword The plain password.
+     * @param hashedPassword The hashed password from the database.
+     * @return true if passwords match, false otherwise.
+     */
+    private boolean checkPassword(String plainPassword, String hashedPassword) {
+        // PostgreSQL 'crypt' function for verifying the password.
+        return BCrypt.checkpw(plainPassword, hashedPassword);
+    }
+
 
     /**
      * Find all users in the system
