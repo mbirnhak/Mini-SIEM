@@ -46,7 +46,9 @@ export async function loadActions() {
 
             row.innerHTML = `
   <td>${actionName}</td>
-  <td>${categoryName}</td>
+  <td>${categoryName !== 'Uncategorized' ? 
+                `<a href="#" class="category-link" data-category="${encodeURIComponent(categoryName)}">${categoryName}</a>` :
+                categoryName}</td>
 `;
 
             actionsTableBody.appendChild(row);
@@ -59,6 +61,9 @@ export async function loadActions() {
             actionsTableBody.appendChild(emptyRow);
         }
 
+        // Add event listeners for category links
+        addCategoryLinkListeners();
+
     } catch (error) {
         console.error('Error loading actions:', error);
         const actionsTab = document.getElementById('tab-actions');
@@ -67,4 +72,80 @@ export async function loadActions() {
             actionsTab.innerHTML = '<div class="error">Failed to load actions</div>';
         }
     }
+}
+
+function addCategoryLinkListeners() {
+    const categoryLinks = document.querySelectorAll('.category-link');
+
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const categoryName = decodeURIComponent(link.getAttribute('data-category') || '');
+            await showCategoryDetails(categoryName);
+        });
+    });
+}
+
+async function showCategoryDetails(categoryName: string) {
+    try {
+        const response = await fetchApi(`/events/categories/${encodeURIComponent(categoryName)}`);
+        const category = await response.json();
+
+        // Create or get the category modal
+        let categoryModal = document.getElementById('category-modal');
+        if (!categoryModal) {
+            categoryModal = createCategoryModal();
+        }
+
+        // Update modal content with the category details
+        const modalContent = document.getElementById('category-details');
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <h3>${category.categoryname || 'Unknown Category'}</h3>
+                <div class="category-description">
+                    <p>${category.description || 'No description available'}</p>
+                </div>
+            `;
+        }
+
+        // Show the modal
+        categoryModal.style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching category details:', error);
+        alert('Failed to load category details');
+    }
+}
+
+export function createCategoryModal() {
+    const categoryModal = document.createElement('div');
+    categoryModal.id = 'category-modal';
+    categoryModal.className = 'modal';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => {
+        categoryModal.style.display = 'none';
+    };
+
+    const detailsDiv = document.createElement('div');
+    detailsDiv.id = 'category-details';
+
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(detailsDiv);
+    categoryModal.appendChild(modalContent);
+
+    document.body.appendChild(categoryModal);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === categoryModal) {
+            categoryModal.style.display = 'none';
+        }
+    });
+
+    return categoryModal;
 }
