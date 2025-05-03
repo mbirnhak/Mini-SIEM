@@ -1,5 +1,5 @@
 import './style.css'
-import { register, login } from './users.ts'
+import {register, login} from './users.ts'
 
 const BASE_URL = 'http://localhost:8080/api'
 let loggedInUserId: string | null = null;
@@ -173,7 +173,7 @@ submitLoginBtn?.addEventListener('click', async () => {
     const username = usernameInput?.value || ''
     const password = passwordInput?.value || ''
 
-    console.log('Logging in:', { username, password })
+    console.log('Logging in:', {username, password})
 
     try {
         loggedInUserId = await login({username, password}) // <-- assume login returns user ID or null
@@ -204,8 +204,8 @@ submitRegisterBtn?.addEventListener('click', () => {
     const email = emailInput?.value || ''
     const password = passwordInput?.value || ''
 
-    console.log('Registering user:', { name, username, email, password })
-    register({ name, username, email, password })
+    console.log('Registering user:', {name, username, email, password})
+    register({name, username, email, password})
     registerModal.style.display = 'none'
 
     // Show dashboard after successful registration
@@ -281,71 +281,243 @@ async function fetchLatestEvents() {
 }
 
 // Function to display events in the table
-// Function to display events in the table
 function displayEvents(events) {
     if (!events || events.length === 0) {
-        eventsTableBody.innerHTML = '<tr><td colspan="7">No events found</td></tr>'
-        return
+        eventsTableBody.innerHTML = '<tr><td colspan="7">No events found</td></tr>';
+        return;
     }
 
-    eventsTableBody.innerHTML = ''
+    eventsTableBody.innerHTML = '';
 
     events.forEach(event => {
-        const row = document.createElement('tr')
+        const row = document.createElement('tr');
 
         // Format timestamp - convert from Unix timestamp to date
         const timestamp = event.timestamp ?
-            new Date(event.timestamp * 1000).toLocaleString() : 'N/A'
+            new Date(event.timestamp * 1000).toLocaleString() : 'N/A';
 
         // Get the raw log line
-        const rawLine = event.rawline?.rawline || 'No raw line'
+        const rawLine = event.rawline?.rawline || 'No raw line';
 
         // Extract file ID
-        const fileId = event.fileid?.id || 'N/A'
+        const fileId = event.fileid?.id || 'N/A';
 
         // Alert ID if available
-        const alertId = event.associatedalertid?.id || 'N/A'
-
-        // Parse basic information from the raw line
-        let action = 'Unknown'
-        let source = 'N/A'
-        let destination = 'N/A'
-        let message = rawLine
-
-        // Very basic parsing of common log formats
-        if (rawLine.includes('blocked')) {
-            action = 'Blocked'
-        } else if (rawLine.includes('connection')) {
-            action = 'Connection'
-        } else if (rawLine.includes('login')) {
-            action = 'Authentication'
-        } else if (rawLine.includes('DNS')) {
-            action = 'DNS'
-        } else if (rawLine.includes('GET') || rawLine.includes('POST')) {
-            action = 'HTTP Request'
-        }
-
-        // Extract source and destination if available
-        const ipMatch = rawLine.match(/(\d+\.\d+\.\d+\.\d+)/g)
-        if (ipMatch && ipMatch.length >= 1) {
-            source = ipMatch[0]
-            if (ipMatch.length >= 2) {
-                destination = ipMatch[1]
-            }
-        }
+        const alertId = event.associatedalertid?.id || 'N/A';
 
         row.innerHTML = `
             <td>${event.id}</td>
             <td>${timestamp}</td>
             <td>File ${fileId}</td>
-            <td>${action}</td>
-            <td>${message}</td>
-            <td>${source} → ${destination}</td>
+            <td class="placeholder-data">Loading...</td>
+            <td><a href="#" class="rawline-link" data-rawline="${encodeURIComponent(rawLine)}">${rawLine}</a></td>
+            <td class="placeholder-data">Loading...</td>
             <td>${alertId !== 'N/A' ? `Alert ${alertId}` : 'No alert'}</td>
-        `
+        `;
 
-        eventsTableBody.appendChild(row)
-    })
+        eventsTableBody.appendChild(row);
+    });
+
+    // Add event listeners to all rawline links
+    addRawlineLinkListeners();
+}
+
+// Add click event listeners to rawline links
+function addRawlineLinkListeners() {
+    const rawlineLinks = document.querySelectorAll('.rawline-link');
+
+    rawlineLinks.forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const rawline = decodeURIComponent(link.getAttribute('data-rawline'));
+            showRawlineDetails(rawline, link);
+        });
+    });
+}
+
+// Function to fetch and show rawline details
+async function showRawlineDetails(rawline, linkElement) {
+    try {
+        // Encode the rawline to make it URL-safe
+        const encodedRawline = encodeURIComponent(rawline);
+        const response = await fetch(`${BASE_URL}/events/rawlines/${encodedRawline}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch rawline details: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Create or show modal with the parsed data
+        showRawlineModal(data, rawline);
+
+        // Update the placeholders in the same row as the clicked link
+        updateRowWithParsedData(linkElement, data);
+
+    } catch (error) {
+        console.error('Error fetching rawline details:', error);
+        alert(`Error fetching details: ${error.message}`);
+    }
+}
+
+// Function to update the row with parsed data
+function updateRowWithParsedData(linkElement, data) {
+    const row = linkElement.closest('tr');
+    if (!row) return;
+
+    // Find the action and source/destination cells in this row
+    const actionCell = row.querySelector('td:nth-child(4)');
+    const sourceDestCell = row.querySelector('td:nth-child(6)');
+
+    if (actionCell) {
+        actionCell.textContent = data.action || 'Unknown';
+        actionCell.classList.remove('placeholder-data');
+    }
+
+    if (sourceDestCell) {
+        const source = data.sourcedeviceid ? `Device ${data.sourcedeviceid}` : 'N/A';
+        const sourcePort = data.sourceport ? `:${data.sourceport}` : '';
+        const destination = data.destinationdeviceid ? `Device ${data.destinationdeviceid}` : 'N/A';
+        const destPort = data.destinationport ? `:${data.destinationport}` : '';
+
+        sourceDestCell.textContent = `${source}${sourcePort} → ${destination}${destPort}`;
+        sourceDestCell.classList.remove('placeholder-data');
+    }
+}
+
+// Function to show a modal with rawline details
+function showRawlineModal(data, rawline) {
+    // Check if the modal already exists, if not create it
+    let rawlineModal = document.getElementById('rawline-modal');
+
+    if (!rawlineModal) {
+        rawlineModal = document.createElement('div');
+        rawlineModal.id = 'rawline-modal';
+        rawlineModal.className = 'modal';
+
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+
+        const closeBtn = document.createElement('span');
+        closeBtn.className = 'close';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.onclick = () => {
+            rawlineModal.style.display = 'none';
+        };
+
+        const title = document.createElement('h2');
+        title.textContent = 'Raw Line Details';
+
+        const detailsDiv = document.createElement('div');
+        detailsDiv.id = 'rawline-details';
+
+        modalContent.appendChild(closeBtn);
+        modalContent.appendChild(title);
+        modalContent.appendChild(detailsDiv);
+        rawlineModal.appendChild(modalContent);
+
+        document.body.appendChild(rawlineModal);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === rawlineModal) {
+                rawlineModal.style.display = 'none';
+            }
+        });
+    }
+
+    // Helper function to extract values from possibly nested objects
+    function extractValue(obj, propertyName) {
+        if (!obj) return 'N/A';
+
+        // If the property is an object with an 'id' or 'name' field, use that
+        if (typeof obj === 'object') {
+            if (obj.id) return obj.id;
+            if (obj.name) return obj.name;
+            // Try stringifying but limit it to avoid overwhelming the UI
+            try {
+                const str = JSON.stringify(obj);
+                if (str.length < 50) return str;
+                return `[Complex Object]`;
+            } catch (e) {
+                return `[Object]`;
+            }
+        }
+
+        return obj;
+    }
+
+    // Update modal content with the parsed data
+    const detailsDiv = document.getElementById('rawline-details');
+
+    // Extract action value
+    const actionValue = data.action ? extractValue(data.action) : 'N/A';
+
+    // Extract source information
+    let sourceInfo = 'N/A';
+    if (data.sourcedeviceid) {
+        const deviceId = extractValue(data.sourcedeviceid);
+        sourceInfo = `Device ID: ${deviceId}`;
+        if (data.sourceport) {
+            sourceInfo += `, Port: ${data.sourceport}`;
+        }
+    }
+
+    // Extract destination information
+    let destInfo = 'N/A';
+    if (data.destinationdeviceid) {
+        const deviceId = extractValue(data.destinationdeviceid);
+        destInfo = `Device ID: ${deviceId}`;
+        if (data.destinationport) {
+            destInfo += `, Port: ${data.destinationport}`;
+        }
+    }
+
+    let content = `
+        <div class="rawline-original">
+            <h3>Original Raw Line</h3>
+            <pre>${rawline}</pre>
+        </div>
+        <div class="rawline-parsed">
+            <h3>Parsed Details</h3>
+            <table>
+                <tr>
+                    <th>Action</th>
+                    <td>${actionValue}</td>
+                </tr>
+                <tr>
+                    <th>Source</th>
+                    <td>${sourceInfo}</td>
+                </tr>
+                <tr>
+                    <th>Destination</th>
+                    <td>${destInfo}</td>
+                </tr>
+                <tr>
+                    <th>Message</th>
+                    <td>${data.message || 'N/A'}</td>
+                </tr>
+            `;
+
+    // Add additional parsed data if available
+    if (data.parseddata) {
+        content += `
+                <tr>
+                    <th>Additional Data</th>
+                    <td><pre>${JSON.stringify(data.parseddata, null, 2)}</pre></td>
+                </tr>
+            `;
+    }
+
+    content += `
+            </table>
+        </div>
+    `;
+
+    detailsDiv.innerHTML = content;
+
+    // Show the modal
+    rawlineModal.style.display = 'block';
 }
 
 // Add this function to fetch devices from your backend and update the DOM

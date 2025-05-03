@@ -100,8 +100,9 @@
   background-color: #005fa3;
 }
 
+/* Base modal styles for all modals */
 .modal {
-  display: none; /* Hide all modals by default */
+  display: none;
   position: fixed;
   z-index: 1;
   left: 0;
@@ -112,17 +113,15 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Base styles for all modal content */
 .modal-content {
   background-color: #fff;
-  margin: 10% auto; /* Push it down and center horizontally */
+  margin: 10% auto;
   padding: 2rem;
   border: 1px solid #888;
-  width: 300px; /* or whatever width you like */
   border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem; /* Space between inputs */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-content input {
@@ -131,6 +130,16 @@
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* Specific styles for auth modals (login/register) */
+#login-modal .modal-content,
+#register-modal .modal-content {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .top-nav {
@@ -156,4 +165,97 @@
 
 .tab-panel {
   margin-top: 20px;
+}
+
+/* For placeholder data that will be loaded */
+.placeholder-data {
+  color: #999;
+  font-style: italic;
+}
+
+/* Styles for rawline links */
+.rawline-link {
+  text-decoration: underline;
+  color: #3498db;
+  cursor: pointer;
+}
+
+.rawline-link:hover {
+  color: #2980b9;
+}
+
+/* Specific styles for rawline modal */
+#rawline-modal {
+  z-index: 2; /* Higher z-index to appear above other modals */
+}
+
+#rawline-modal .modal-content {
+  width: 80%;
+  max-width: 800px;
+  min-width: 600px;
+  margin: 5% auto;
+  align-items: flex-start;
+}
+
+#rawline-details {
+  width: 100%;
+  overflow: hidden;
+}
+
+#rawline-details pre {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  max-height: 200px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+#rawline-details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  table-layout: fixed;
+}
+
+#rawline-details th, #rawline-details td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#rawline-details th {
+  background-color: #f2f2f2;
+  width: 150px;
+}
+
+#rawline-details td {
+  max-width: calc(100% - 150px);
+}
+
+/* For JSON data specifically */
+#rawline-details td pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.rawline-original, .rawline-parsed {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Override the existing modal content styles for rawline modal */
+#rawline-modal .modal-content {
+  align-items: flex-start;
+}
+
+/* For very long unbroken text */
+.modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
 }
