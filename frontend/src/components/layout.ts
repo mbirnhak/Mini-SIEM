@@ -29,8 +29,8 @@ export function renderInitialHTML() {
         <div class="tab-panel" id="tab-devices">Loading Devices...</div>
         <div class="tab-panel" id="tab-log-files" style="display: none;">Loading Log Files...</div>
         <div class="tab-panel" id="tab-log-events" style="display: none;">
-          <div id="events-table-container">
-            <table id="events-table">
+          <div class="table-container" id="events-table-container">
+            <table class="data-table" id="events-table">
               <thead>
                 <tr>
                   <th>ID</th>
