@@ -16,7 +16,7 @@ import java.time.Instant;
 @Table(name = "logfile")
 public class Logfile {
     @Id
-    @ColumnDefault("nextval('logfile_fileid_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fileid", nullable = false)
     private Integer id;
 

@@ -1,5 +1,5 @@
 import { fetchApi } from './api';
-import { Device } from '../types/index'
+import { Device } from '../types'
 
 export async function loadDevices() {
     try {

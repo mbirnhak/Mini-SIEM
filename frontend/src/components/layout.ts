@@ -95,6 +95,15 @@ export function renderInitialHTML() {
           <button id="submit-register">Register</button>
         </div>
       </div>
+      
+       <!-- Log File Modal -->
+      <div id="log-file-modal" class="modal">
+        <div class="modal-content">
+          <span class="close" data-modal="log-file-modal">&times;</span>
+          <h2>Log File Details</h2>
+          <div id="log-file-details"></div>
+        </div>
+      </div>
     </section>
   </div>
   `;

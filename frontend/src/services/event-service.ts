@@ -21,7 +21,13 @@ export async function fetchLatestEvents() {
 }
 
 export async function fetchRawlineDetails(rawline: string) {
-    const encodedRawline = encodeURIComponent(rawline);
-    const rawline_response = await fetchApi(`/events/rawlines/${encodedRawline}`)
-    return await rawline_response.json();
+    try {
+        const encodedRawline = encodeURIComponent(rawline);
+        const response = await fetchApi(`/events/rawlines/${encodedRawline}`);
+        return await response.json();
+    } catch (error) {
+        // Rethrow with a specific error property to indicate not found
+        console.error('Error in fetchRawlineDetails:', error);
+        throw new Error('RawlineNotFound');
+    }
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Integer> {
     // Find device by IP address
-    Optional<Device> findByIpaddress(InetAddress ipAddress);
+    List<Device> findByIpaddress(InetAddress ipAddress);
 
     // Find device by hostname (exact match)
     Optional<Device> findByHostname(String hostname);

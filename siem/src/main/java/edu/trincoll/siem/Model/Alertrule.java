@@ -19,7 +19,7 @@ import java.util.Map;
 @Table(name = "alertrule")
 public class Alertrule {
     @Id
-    @ColumnDefault("nextval('alertrule_ruleid_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ruleid", nullable = false)
     private Integer id;
 

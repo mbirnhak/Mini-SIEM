@@ -15,7 +15,7 @@ import java.time.Instant;
 @Table(name = "incidentreport")
 public class Incidentreport {
     @Id
-    @ColumnDefault("nextval('incidentreport_reportid_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reportid", nullable = false)
     private Integer id;
 

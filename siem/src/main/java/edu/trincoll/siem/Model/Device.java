@@ -1,9 +1,6 @@
 package edu.trincoll.siem.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -16,7 +13,7 @@ import java.net.InetAddress;
 @Table(name = "device")
 public class Device {
     @Id
-    @ColumnDefault("nextval('device_deviceid_seq')")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deviceid", nullable = false)
     private Integer id;
 

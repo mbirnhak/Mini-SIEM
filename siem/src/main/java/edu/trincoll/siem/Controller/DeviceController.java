@@ -3,16 +3,21 @@ package edu.trincoll.siem.Controller;
 import edu.trincoll.siem.Model.Device;
 import edu.trincoll.siem.Service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/devices")
 public class DeviceController {
+
+    private static final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
     @Autowired
     private DeviceService deviceService;
@@ -28,9 +33,19 @@ public class DeviceController {
     }
 
     @GetMapping("/ip")
-    public Optional<Device> getDeviceByIpAddress(@RequestParam String ip) throws UnknownHostException {
-        InetAddress ipAddress = InetAddress.getByName(ip);
-        return deviceService.getDeviceByIpAddress(ipAddress);
+    public ResponseEntity<Device> getDeviceByIpAddress(@RequestParam String ip) {
+        try {
+            InetAddress ipAddress = InetAddress.getByName(ip);
+            Optional<Device> device = deviceService.getDeviceByIpAddress(ipAddress);
+
+            return device.map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (UnknownHostException e) {
+            // Log the error
+            logger.warn("Invalid IP address format: {}", ip);
+            // Return 400 Bad Request instead of throwing an exception
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/hostname")

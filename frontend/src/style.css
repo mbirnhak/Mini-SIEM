@@ -260,3 +260,38 @@
   max-height: 80vh;
   overflow-y: auto;
 }
+
+/* Log file modal styles */
+#log-file-modal .modal-content {
+  width: 80%;
+  max-width: 800px;
+}
+
+.log-file-info table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.log-file-info th, .log-file-info td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.log-file-info th {
+  width: 150px;
+  background-color: #f2f2f2;
+}
+
+.log-file-content pre {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 12px;
+}

@@ -49,3 +49,29 @@ export interface Device {
     location: string;
     devicetype: string;
 }
+
+// In types/index.ts
+export interface Logfile {
+    id: number;
+    uploadedby?: number | {
+        uploadedby: number
+    };
+    sourcename?: string;
+    sourcetype?: string;
+    filename?: string;
+    uploadtime?: string;
+    status?: 'Uploaded' | 'Pending' | 'Failed';
+    rawcontent?: string;
+}
+
+export interface Action {
+    action: string;
+    categoryname?: {
+        categoryname: string
+    };
+}
+
+export interface EventCategory {
+    categoryname: string;
+    description?: string;
+}

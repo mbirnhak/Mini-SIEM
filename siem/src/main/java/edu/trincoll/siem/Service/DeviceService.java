@@ -16,7 +16,12 @@ public class DeviceService {
     private DeviceRepository deviceRepository;
 
     public Optional<Device> getDeviceByIpAddress(InetAddress ipAddress) {
-        return deviceRepository.findByIpaddress(ipAddress);
+        List<Device> devices = deviceRepository.findByIpaddress(ipAddress);
+        if (devices.isEmpty()) {
+            return Optional.empty();
+        }
+        // Return the first device found
+        return Optional.of(devices.getFirst());
     }
 
     public Optional<Device> getDeviceByHostname(String hostname) {
