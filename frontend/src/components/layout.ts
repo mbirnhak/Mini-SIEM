@@ -15,6 +15,7 @@ export function renderInitialHTML() {
     <section id="dashboard" style="display: none;">
       <h2>Latest Events Dashboard</h2>
       <nav id="top-nav" class="top-nav">
+        <button class="nav-tab" data-tab="home">Home</button>
         <button class="nav-tab" data-tab="devices">Devices</button>
         <button class="nav-tab" data-tab="log-files">Log Files</button>
         <button class="nav-tab" data-tab="log-events">Log Events</button>
@@ -26,7 +27,8 @@ export function renderInitialHTML() {
         <button class="nav-tab" data-tab="event-categories">Event Categories</button>
       </nav>
       <div id="tab-content">
-        <div class="tab-panel" id="tab-devices">Loading Devices...</div>
+        <div class="tab-panel" id="tab-home"><h1>Welcome to your SIEM Dashboard</h1></div>
+        <div class="tab-panel" id="tab-devices" style="display: none;">Loading Devices...</div>
         <div class="tab-panel" id="tab-log-files" style="display: none;">Loading Log Files...</div>
         <div class="tab-panel" id="tab-log-events" style="display: none;">
           <div class="table-container" id="events-table-container">
