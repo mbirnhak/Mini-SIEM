@@ -295,3 +295,84 @@
   font-family: monospace;
   font-size: 12px;
 }
+
+/* Add category button styles */
+.add-category-btn {
+  margin-left: 10px;
+  padding: 2px 8px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.add-category-btn:hover {
+  background-color: #2980b9;
+}
+
+.uncategorized {
+  color: #e74c3c;
+  font-style: italic;
+}
+
+/* Add category modal styles */
+#add-category-modal .modal-content {
+  width: 50%;
+  max-width: 500px;
+}
+
+.category-selection {
+  margin-top: 20px;
+}
+
+.category-selection label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#category-select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.save-btn, .create-btn {
+  padding: 8px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.create-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+#new-category-form {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+}
+
+#new-category-name, #new-category-description {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#new-category-description {
+  min-height: 60px;
+  resize: vertical;
+}

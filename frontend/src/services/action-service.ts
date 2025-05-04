@@ -1,4 +1,4 @@
-import { fetchApi } from './api';
+import {fetchApi, postApi, updateApi} from './api';
 import { Action } from '../types';
 
 export async function loadActions() {
@@ -46,9 +46,14 @@ export async function loadActions() {
 
             row.innerHTML = `
   <td>${actionName}</td>
-  <td>${categoryName !== 'Uncategorized' ? 
+  <td>${categoryName !== 'Uncategorized' ?
                 `<a href="#" class="category-link" data-category="${encodeURIComponent(categoryName)}">${categoryName}</a>` :
-                categoryName}</td>
+                `<span class="uncategorized">Uncategorized 
+                    <button class="add-category-btn" data-action="${encodeURIComponent(actionName)}">
+                        Add Category
+                    </button>
+                </span>`
+            }</td>
 `;
 
             actionsTableBody.appendChild(row);
@@ -63,6 +68,7 @@ export async function loadActions() {
 
         // Add event listeners for category links
         addCategoryLinkListeners();
+        addAddCategoryButtonListeners();
 
     } catch (error) {
         console.error('Error loading actions:', error);
@@ -84,6 +90,185 @@ function addCategoryLinkListeners() {
             await showCategoryDetails(categoryName);
         });
     });
+}
+
+function addAddCategoryButtonListeners() {
+    const addCategoryButtons = document.querySelectorAll('.add-category-btn');
+
+    addCategoryButtons.forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const actionName = decodeURIComponent(button.getAttribute('data-action') || '');
+            await showAddCategoryModal(actionName);
+        });
+    });
+}
+
+async function showAddCategoryModal(actionName: string) {
+    // Create or get the add category modal
+    let addCategoryModal = document.getElementById('add-category-modal');
+    if (!addCategoryModal) {
+        addCategoryModal = createAddCategoryModal();
+    }
+
+    // Fetch all available categories
+    try {
+        const response = await fetchApi('/events/categories');
+        const categories = await response.json();
+
+        // Update modal content
+        const modalContent = document.getElementById('add-category-content');
+        if (modalContent) {
+            modalContent.innerHTML = `
+                <h3>Add Category for Action: ${actionName}</h3>
+                <div class="category-selection">
+                    <label for="category-select">Select a category:</label>
+                    <select id="category-select">
+                        <option value="">-- Select Category --</option>
+                        ${categories.map((cat: any) => `
+                            <option value="${cat.categoryname}">${cat.categoryname}</option>
+                        `).join('')}
+                    </select>
+                    <button id="save-category-btn" class="save-btn">Save</button>
+                    <button id="create-new-category-btn" class="create-btn">Create New Category</button>
+                </div>
+                <div id="new-category-form" style="display: none;">
+                    <h4>Create New Category</h4>
+                    <input type="text" id="new-category-name" placeholder="Category name" />
+                    <textarea id="new-category-description" placeholder="Category description"></textarea>
+                    <button id="confirm-create-category-btn" class="save-btn">Create Category</button>
+                </div>
+            `;
+
+            // Add event listener for save button
+            document.getElementById('save-category-btn')?.addEventListener('click', () => {
+                saveCategory(actionName);
+            });
+
+            // Add event listener for create new category button
+            document.getElementById('create-new-category-btn')?.addEventListener('click', () => {
+                document.getElementById('new-category-form')!.style.display = 'block';
+            });
+
+            // Add event listener for confirm create button
+            document.getElementById('confirm-create-category-btn')?.addEventListener('click', () => {
+                createAndAssignNewCategory(actionName);
+            });
+        }
+
+        // Show the modal
+        addCategoryModal.style.display = 'block';
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        alert('Failed to load categories');
+    }
+}
+
+async function saveCategory(actionName: string) {
+    const categorySelect = document.getElementById('category-select') as HTMLSelectElement;
+    const selectedCategory = categorySelect.value;
+
+    if (!selectedCategory) {
+        alert('Please select a category');
+        return;
+    }
+
+    try {
+        // Update the action with the selected category
+        const response = await updateApi(`/events/actions/${encodeURIComponent(actionName)}`,
+            {
+                categoryname: { categoryname: selectedCategory }
+            });
+
+        if (response.ok) {
+            alert('Category assigned successfully');
+            // Close the modal
+            document.getElementById('add-category-modal')!.style.display = 'none';
+            // Reload the actions table
+            loadActions();
+        } else {
+            throw new Error('Failed to update action');
+        }
+    } catch (error) {
+        console.error('Error updating action:', error);
+        alert('Failed to assign category');
+    }
+}
+
+async function createAndAssignNewCategory(actionName: string) {
+    const categoryName = (document.getElementById('new-category-name') as HTMLInputElement).value;
+    const categoryDescription = (document.getElementById('new-category-description') as HTMLTextAreaElement).value;
+
+    if (!categoryName) {
+        alert('Please enter a category name');
+        return;
+    }
+
+    try {
+        // First, create the new category
+        const createResponse = await postApi('/events/categories', {
+            categoryname: categoryName,
+            description: categoryDescription
+        });
+
+        if (createResponse.ok) {
+            // Then assign it to the action
+            const assignResponse = await updateApi(`/events/actions/${encodeURIComponent(actionName)}`,
+                {
+                    categoryname: { categoryname: categoryName }
+                });
+
+            if (assignResponse.ok) {
+                alert('New category created and assigned successfully');
+                // Close the modal
+                document.getElementById('add-category-modal')!.style.display = 'none';
+                // Reload the actions table
+                loadActions();
+            } else {
+                throw new Error('Failed to assign the new category');
+            }
+        } else {
+            throw new Error('Failed to create new category');
+        }
+    } catch (error) {
+        console.error('Error creating/assigning category:', error);
+        alert('Failed to create or assign category');
+    }
+}
+
+export function createAddCategoryModal() {
+    const addCategoryModal = document.createElement('div');
+    addCategoryModal.id = 'add-category-modal';
+    addCategoryModal.className = 'modal';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+
+    const closeBtn = document.createElement('span');
+    closeBtn.className = 'close';
+    closeBtn.setAttribute('data-modal', 'add-category-modal');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => {
+        addCategoryModal.style.display = 'none';
+    };
+
+    const contentDiv = document.createElement('div');
+    contentDiv.id = 'add-category-content';
+
+    modalContent.appendChild(closeBtn);
+    modalContent.appendChild(contentDiv);
+    addCategoryModal.appendChild(modalContent);
+
+    document.body.appendChild(addCategoryModal);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === addCategoryModal) {
+            addCategoryModal.style.display = 'none';
+        }
+    });
+
+    return addCategoryModal;
 }
 
 async function showCategoryDetails(categoryName: string) {

@@ -2,21 +2,28 @@ export function setupModals() {
     const loginModal = document.getElementById('login-modal') as HTMLElement;
     const registerModal = document.getElementById('register-modal') as HTMLElement;
     const logFileModal = document.getElementById('log-file-modal') as HTMLElement;
+    const categoryModal = document.getElementById('category-modal') as HTMLElement;
+    const addCategoryModal = document.getElementById('add-category-modal') as HTMLElement;
+
     const loginBtn = document.getElementById('login-button');
     const registerBtn = document.getElementById('register-button');
     const closeBtns = document.querySelectorAll('.close');
 
     // Open login modal
     loginBtn?.addEventListener('click', () => {
-        registerModal.style.display = 'none'; // Make sure register modal is closed
-        logFileModal.style.display = 'none'; // Make sure log file modal is closed
+        if (registerModal) registerModal.style.display = 'none';
+        if (logFileModal) logFileModal.style.display = 'none';
+        if (categoryModal) categoryModal.style.display = 'none';
+        if (addCategoryModal) addCategoryModal.style.display = 'none';
         loginModal.style.display = 'block';
     });
 
     // Open register modal
     registerBtn?.addEventListener('click', () => {
-        loginModal.style.display = 'none'; // Make sure login modal is closed
-        logFileModal.style.display = 'none'; // Make sure log file modal is closed
+        loginModal.style.display = 'none';
+        if (logFileModal) logFileModal.style.display = 'none';
+        if (categoryModal) categoryModal.style.display = 'none';
+        if (addCategoryModal) addCategoryModal.style.display = 'none';
         registerModal.style.display = 'block';
     });
 
@@ -29,7 +36,9 @@ export function setupModals() {
 
     // Close modals when clicking outside
     window.addEventListener('click', (event) => {
-        if (event.target === loginModal || event.target === registerModal || event.target === logFileModal) {
+        if (event.target === loginModal || event.target === registerModal ||
+            event.target === logFileModal || event.target === categoryModal ||
+            event.target === addCategoryModal) {
             closeModals();
         }
     });
@@ -39,11 +48,19 @@ export function closeModals() {
     const loginModal = document.getElementById('login-modal') as HTMLElement;
     const registerModal = document.getElementById('register-modal') as HTMLElement;
     const logFileModal = document.getElementById('log-file-modal') as HTMLElement;
+    const categoryModal = document.getElementById('category-modal') as HTMLElement;
+    const addCategoryModal = document.getElementById('add-category-modal') as HTMLElement;
 
     loginModal.style.display = 'none';
     registerModal.style.display = 'none';
     if (logFileModal) {
         logFileModal.style.display = 'none';
+    }
+    if (categoryModal) {
+        categoryModal.style.display = 'none';
+    }
+    if (addCategoryModal) {
+        addCategoryModal.style.display = 'none';
     }
 }
 
