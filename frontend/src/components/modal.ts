@@ -11,20 +11,20 @@ export function setupModals() {
 
     // Open login modal
     loginBtn?.addEventListener('click', () => {
-        if (registerModal) registerModal.style.display = 'none';
-        if (logFileModal) logFileModal.style.display = 'none';
-        if (categoryModal) categoryModal.style.display = 'none';
-        if (addCategoryModal) addCategoryModal.style.display = 'none';
-        loginModal.style.display = 'block';
+        if (registerModal) registerModal.classList.remove('active');
+        if (logFileModal) logFileModal.classList.remove('active');
+        if (categoryModal) categoryModal.classList.remove('active');
+        if (addCategoryModal) addCategoryModal.classList.remove('active');
+        loginModal.classList.add('active');
     });
 
     // Open register modal
     registerBtn?.addEventListener('click', () => {
-        loginModal.style.display = 'none';
-        if (logFileModal) logFileModal.style.display = 'none';
-        if (categoryModal) categoryModal.style.display = 'none';
-        if (addCategoryModal) addCategoryModal.style.display = 'none';
-        registerModal.style.display = 'block';
+        loginModal.classList.remove('active');
+        if (logFileModal) logFileModal.classList.remove('active');
+        if (categoryModal) categoryModal.classList.remove('active');
+        if (addCategoryModal) addCategoryModal.classList.remove('active');
+        registerModal.classList.add('active');
     });
 
     // Close modals when clicking on X
@@ -51,16 +51,16 @@ export function closeModals() {
     const categoryModal = document.getElementById('category-modal') as HTMLElement;
     const addCategoryModal = document.getElementById('add-category-modal') as HTMLElement;
 
-    loginModal.style.display = 'none';
-    registerModal.style.display = 'none';
+    loginModal.classList.remove('active');
+    registerModal.classList.remove('active');
     if (logFileModal) {
-        logFileModal.style.display = 'none';
+        logFileModal.classList.remove('active');
     }
     if (categoryModal) {
-        categoryModal.style.display = 'none';
+        categoryModal.classList.remove('active');
     }
     if (addCategoryModal) {
-        addCategoryModal.style.display = 'none';
+        addCategoryModal.classList.remove('active');
     }
 }
 
@@ -79,7 +79,7 @@ export function createRawlineModal() {
         closeBtn.className = 'close';
         closeBtn.innerHTML = '&times;';
         closeBtn.onclick = () => {
-            rawlineModal.style.display = 'none';
+            rawlineModal.classList.remove('active');
         };
 
         const title = document.createElement('h2');
@@ -98,7 +98,7 @@ export function createRawlineModal() {
         // Close modal when clicking outside
         window.addEventListener('click', (event) => {
             if (event.target === rawlineModal) {
-                rawlineModal.style.display = 'none';
+                rawlineModal.classList.remove('active');
             }
         });
     }

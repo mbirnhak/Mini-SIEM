@@ -1,9 +1,10 @@
 import './style.css';
-import { renderInitialHTML } from './components/layout';
-import { setupAuth } from './components/auth';
-import { setupDashboard } from './components/dashboard';
-import { setupModals } from './components/modal';
-import { setupTabs } from './components/tabs';
+import {renderInitialHTML} from './components/layout';
+import {setupAuth} from './components/auth';
+import {setupDashboard} from './components/dashboard';
+import {setupModals} from './components/modal';
+import {setupTabs} from './components/tabs';
+import { setupHomeDashboard } from './services/home-service.ts'
 
 // Initialize the application
 function initApp() {
@@ -15,6 +16,7 @@ function initApp() {
     setupAuth();
     setupTabs();
     setupDashboard();
+    setupHomeDashboard();
 }
 
 // Start the application when DOM is loaded

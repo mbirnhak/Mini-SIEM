@@ -147,7 +147,7 @@ async function showAddCategoryModal(actionName: string) {
 
             // Add event listener for create new category button
             document.getElementById('create-new-category-btn')?.addEventListener('click', () => {
-                document.getElementById('new-category-form')!.style.display = 'block';
+                document.getElementById('new-category-form')!.classList.add('active');
             });
 
             // Add event listener for confirm create button
@@ -157,7 +157,7 @@ async function showAddCategoryModal(actionName: string) {
         }
 
         // Show the modal
-        addCategoryModal.style.display = 'block';
+        addCategoryModal.classList.add('active');
     } catch (error) {
         console.error('Error fetching categories:', error);
         alert('Failed to load categories');
@@ -183,7 +183,7 @@ async function saveCategory(actionName: string) {
         if (response.ok) {
             alert('Category assigned successfully');
             // Close the modal
-            document.getElementById('add-category-modal')!.style.display = 'none';
+            document.getElementById('add-category-modal')!.classList.remove('active');
             // Reload the actions table
             loadActions();
         } else {
@@ -221,7 +221,7 @@ async function createAndAssignNewCategory(actionName: string) {
             if (assignResponse.ok) {
                 alert('New category created and assigned successfully');
                 // Close the modal
-                document.getElementById('add-category-modal')!.style.display = 'none';
+                document.getElementById('add-category-modal')!.classList.remove('active');
                 // Reload the actions table
                 loadActions();
             } else {
@@ -249,7 +249,7 @@ export function createAddCategoryModal() {
     closeBtn.setAttribute('data-modal', 'add-category-modal');
     closeBtn.innerHTML = '&times;';
     closeBtn.onclick = () => {
-        addCategoryModal.style.display = 'none';
+        addCategoryModal.classList.remove('active');
     };
 
     const contentDiv = document.createElement('div');
@@ -264,7 +264,7 @@ export function createAddCategoryModal() {
     // Close modal when clicking outside
     window.addEventListener('click', (event) => {
         if (event.target === addCategoryModal) {
-            addCategoryModal.style.display = 'none';
+            addCategoryModal.classList.remove('active');
         }
     });
 
@@ -294,7 +294,7 @@ async function showCategoryDetails(categoryName: string) {
         }
 
         // Show the modal
-        categoryModal.style.display = 'block';
+        categoryModal.classList.add('active');
     } catch (error) {
         console.error('Error fetching category details:', error);
         alert('Failed to load category details');
@@ -313,7 +313,7 @@ export function createCategoryModal() {
     closeBtn.className = 'close';
     closeBtn.innerHTML = '&times;';
     closeBtn.onclick = () => {
-        categoryModal.style.display = 'none';
+        categoryModal.classList.remove('active');
     };
 
     const detailsDiv = document.createElement('div');
@@ -328,7 +328,7 @@ export function createCategoryModal() {
     // Close modal when clicking outside
     window.addEventListener('click', (event) => {
         if (event.target === categoryModal) {
-            categoryModal.style.display = 'none';
+            categoryModal.classList.remove('active');
         }
     });
 

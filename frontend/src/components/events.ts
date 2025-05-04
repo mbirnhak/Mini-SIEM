@@ -627,5 +627,5 @@ function showRawlineModal(data: any, rawline: string) {
     detailsDiv.innerHTML = content;
 
     // Show the modal
-    rawlineModal.style.display = 'block';
+    rawlineModal.classList.add('active');
 }

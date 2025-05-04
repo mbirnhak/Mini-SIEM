@@ -1,6 +1,6 @@
 export function setupTabs() {
     const navTabs = document.querySelectorAll('.nav-tab');
-    const tabPanels = document.querySelectorAll('.tab-panel');
+    const tabPanels = document.querySelectorAll('.tab-panel') as NodeListOf<HTMLElement>;
 
     navTabs.forEach(tab => {
         tab.addEventListener('click', () => {

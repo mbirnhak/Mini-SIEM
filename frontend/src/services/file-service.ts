@@ -170,7 +170,7 @@ export async function viewLogFile(id: string) {
             // Show the modal
             const modal = document.getElementById('log-file-modal');
             if (modal) {
-                modal.style.display = 'block';
+                modal.classList.add('active');
             }
         }
     } catch (error) {

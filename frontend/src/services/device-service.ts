@@ -1,4 +1,4 @@
-import { fetchApi } from './api';
+import {deleteApi, fetchApi} from './api';
 import { Device } from '../types'
 
 export async function loadDevices() {
@@ -24,6 +24,7 @@ export async function loadDevices() {
                 <th>Operating System</th>
                 <th>Location</th>
                 <th>Device Type</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="devices-body">
@@ -59,6 +60,9 @@ export async function loadDevices() {
   <td>${os}</td>
   <td>${location}</td>
   <td>${deviceType}</td>
+    <td>
+    <button class="action-btn delete-btn" data-id="${id}">Delete</button>
+  </td>
 `;
 
             devicesTableBody.appendChild(row);
@@ -71,12 +75,42 @@ export async function loadDevices() {
             devicesTableBody.appendChild(emptyRow);
         }
 
+        initializeDeviceActionButtons();
+
     } catch (error) {
         console.error('Error loading devices:', error);
         const devicesTab = document.getElementById('tab-devices');
 
         if (devicesTab) {
             devicesTab.innerHTML = '<div class="error">Failed to load devices</div>';
+        }
+    }
+}
+
+// Initialize action buttons
+function initializeDeviceActionButtons() {
+    // Delete button handler
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const id = target.getAttribute('data-id');
+            if (id) {
+                deleteDevice(id);
+            }
+        });
+    });
+}
+
+async function deleteDevice(id: string) {
+    if (confirm('Are you sure you want to delete this device?')) {
+        try {
+            await deleteApi(`/devices/${id}`);
+
+            // Reload the devices after deletion
+            loadDevices();
+        } catch (error) {
+            console.error('Error deleting device:', error);
+            alert('Failed to delete device');
         }
     }
 }
