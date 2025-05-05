@@ -32,7 +32,7 @@ function setupLoginForm() {
 
             if (loggedInUserId) {
                 const loginModal = document.getElementById('login-modal') as HTMLElement;
-                loginModal.style.display = 'none';
+                loginModal.classList.remove('active')
                 showDashboard();
             } else {
                 alert('Login failed. Please check your credentials.');
@@ -62,7 +62,7 @@ function setupRegisterForm() {
 
         if (success) {
             const registerModal = document.getElementById('register-modal') as HTMLElement;
-            registerModal.style.display = 'none';
+            registerModal.classList.remove('active')
 
             // Show dashboard after successful registration
             showDashboard();
