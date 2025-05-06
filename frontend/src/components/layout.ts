@@ -93,6 +93,8 @@ export function renderInitialHTML() {
         <button class="nav-tab" data-tab="threat-intel">Threat Intelligence</button>
         <button class="nav-tab" data-tab="actions">Actions</button>
         <button class="nav-tab" data-tab="event-categories">Event Categories</button>
+        <button class="nav-tab" data-tab="advanced-reports">Advanced Reports</button>
+      </nav>
       </nav>
       <div id="tab-content">
         <div class="tab-panel" id="tab-home">
@@ -126,6 +128,7 @@ export function renderInitialHTML() {
         <div class="tab-panel" id="tab-threat-intel" style="display: none;">Loading Threat Intelligence...</div>
         <div class="tab-panel" id="tab-actions" style="display: none;">Loading Actions...</div>
         <div class="tab-panel" id="tab-event-categories" style="display: none;">Loading Event Categories...</div>
+        <div class="tab-panel" id="tab-advanced-reports" style="display: none;">Loading Advanced Reports...</div>
       </div>
         <!-- Dashboard Controls Section -->
         <div class="dashboard-controls">

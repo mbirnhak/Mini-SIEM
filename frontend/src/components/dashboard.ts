@@ -1,9 +1,10 @@
 import { fetchLatestEvents } from '../services/event-service.ts';
 import { loadDevices } from '../services/device-service.ts';
-import {loadLogFiles} from "../services/file-service.ts";
-import {loadActions} from "../services/action-service.ts";
-import {loadEventCategories} from "../services/category-service.ts";
-import {loadAlerts} from "../services/alert-service.ts";
+import { loadLogFiles } from "../services/file-service.ts";
+import { loadActions } from "../services/action-service.ts";
+import { loadEventCategories } from "../services/category-service.ts";
+import { loadAlerts } from "../services/alert-service.ts";
+import { loadAdvancedReportsTab } from "./advanced.ts";
 
 export function setupDashboard() {
     // Get elements
@@ -43,6 +44,12 @@ export function setupDashboard() {
         showTab('tab-alerts');
         loadAlerts();
     });
+
+    // Set up advanced reports tab
+    document.querySelector<HTMLButtonElement>('[data-tab="advanced-reports"]')?.addEventListener('click', () => {
+        showTab('tab-advanced-reports');
+        loadAdvancedReportsTab();
+    });
 }
 
 // Helper function to show the selected tab and hide others
@@ -56,6 +63,16 @@ function showTab(tabId: string) {
     const selectedTab = document.getElementById(tabId);
     if (selectedTab) {
         selectedTab.style.display = 'block';
+    }
+
+    // Update active tab in navigation
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    const activeTabButton = document.querySelector(`[data-tab="${tabId.replace('tab-', '')}"]`);
+    if (activeTabButton) {
+        activeTabButton.classList.add('active');
     }
 }
 

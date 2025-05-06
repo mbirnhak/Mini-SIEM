@@ -424,7 +424,7 @@ public class EventController {
      * Identifies source devices with abnormally high traffic using subqueries
      * This is a non-trivial subquery application
      */
-    @GetMapping("/events/high-traffic-sources")
+    @GetMapping("/high-traffic-sources")
     public ResponseEntity<List<Object[]>> getHighTrafficSources() {
         return ResponseEntity.ok(rawlineService.getHighTrafficSourceDevices());
     }
