@@ -159,8 +159,9 @@ export async function advancedSearchRawlines(
  */
 export async function getRawlineDetails(rawline: string) {
     try {
-        const encodedRawline = encodeURIComponent(rawline);
-        const response = await fetchApi(`/events/rawlines/${encodedRawline}`);
+        const response = await postApi(`/events/rawlines/details`,{
+            rawline: rawline
+        });
 
         if (!response.ok) {
             throw new Error(`Failed to fetch rawline details: ${response.status} ${response.statusText}`);
@@ -199,8 +200,9 @@ export async function createRawline(rawlineData: any) {
  */
 export async function deleteRawline(rawline: string) {
     try {
-        const encodedRawline = encodeURIComponent(rawline);
-        const response = await deleteApi(`/events/rawlines/${encodedRawline}`);
+        const response = await postApi(`/events/rawlines/delete`,{
+            rawline: rawline
+        });
 
         if (!response.ok) {
             throw new Error(`Failed to delete rawline: ${response.status} ${response.statusText}`);
@@ -418,7 +420,15 @@ async function viewRawlineDetails(rawline: string) {
 
     } catch (error) {
         console.error('Error viewing rawline details:', error);
-        alert(`Error viewing rawline details: ${error instanceof Error ? error.message : String(error)}`);
+
+        // Enhanced error handling
+        if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+            // For long or complex rawlines, try an alternative approach
+            alert("This rawline contains special characters that make it difficult to retrieve directly. " +
+                "Consider using the rawlines tab search functionality instead.");
+        } else {
+            alert(`Error viewing rawline details: ${error instanceof Error ? error.message : String(error)}`);
+        }
     }
 }
 

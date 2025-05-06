@@ -1,0 +1,10 @@
+Apr 17 09:23:41 dc01.corp.local: User bob failed login attempt - Reason: wrong password
+Apr 17 09:25:18 fw01.corp.local: Connection from 192.168.1.45:52631 to 8.8.8.8:53
+Apr 17 09:27:33 web01.corp.local: GET /login.php - 404
+Apr 17 09:30:12 db01.corp.local: Database backup completed successfully
+Apr 17 09:32:55 mail01.corp.local: Source IP: 192.168.1.100 Destination IP: 10.0.0.25:25
+Apr 17 09:35:22 ids01.corp.local: Suspicious traffic detected - Source: 192.168.1.75 Destination: 192.168.1.200
+Apr 17 09:38:47 app01.corp.local: Application startup completed in 12.5 seconds
+Apr 17 09:42:19 proxy01.corp.local: User admin failed login attempt - Reason: account locked
+Apr 17 09:45:33 dhcp01.corp.local: IP 192.168.1.150 assigned to MAC 00:1A:2B:3C:4D:5E
+Apr 17 09:48:56 auth01.corp.local: User sarah successfully authenticated

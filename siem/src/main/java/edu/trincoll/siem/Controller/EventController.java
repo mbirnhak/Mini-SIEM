@@ -1,6 +1,7 @@
 package edu.trincoll.siem.Controller;
 
 import edu.trincoll.siem.Model.*;
+import edu.trincoll.siem.Model.Enums.LogFileStatus;
 import edu.trincoll.siem.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 // Handles: LogEvent, RawLine, LogFile, EventCategory, Action features
 @RestController
@@ -265,9 +268,14 @@ public class EventController {
         return rawlineService.getAllRawlines();
     }
 
-    // Get raw line by content
-    @GetMapping("/rawlines/{rawline}")
-    public ResponseEntity<Rawline> getRawlineByContent(@PathVariable String rawline) {
+    // Get raw line by content using POST (to handle special characters)
+    @PostMapping("/rawlines/details")
+    public ResponseEntity<Rawline> getRawlineByContentPost(@RequestBody Map<String, String> payload) {
+        String rawline = payload.get("rawline");
+        if (rawline == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         return rawlineService.getRawlineByContent(rawline)
                 .map(line -> ResponseEntity.ok(line))
                 .orElse(ResponseEntity.notFound().build());
@@ -306,9 +314,14 @@ public class EventController {
                 .body(rawlineService.saveRawline(rawline));
     }
 
-    // Delete a raw line
-    @DeleteMapping("/rawlines/{rawline}")
-    public ResponseEntity<Void> deleteRawline(@PathVariable String rawline) {
+    // Delete a rawline using POST instead of path parameter
+    @PostMapping("/rawlines/delete")
+    public ResponseEntity<Void> deleteRawlinePost(@RequestBody Map<String, String> payload) {
+        String rawline = payload.get("rawline");
+        if (rawline == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         if (rawlineService.getRawlineByContent(rawline).isPresent()) {
             rawlineService.deleteRawline(rawline);
             return ResponseEntity.noContent().build();
@@ -335,6 +348,23 @@ public class EventController {
     // Create a new log file
     @PostMapping("/logfiles")
     public ResponseEntity<Logfile> createLogfile(@RequestBody Logfile logfile) {
+        // Set the status to "Uploaded" regardless of what was provided
+        logfile.setStatus(LogFileStatus.Uploaded);
+
+        // Set the current timestamp if not provided
+        if (logfile.getUploadtime() == null) {
+            logfile.setUploadtime(Instant.now());
+        }
+
+        // Save the log file first to get an ID
+        Logfile savedLogfile = logfileService.saveLogfile(logfile);
+
+        // Process the file content asynchronously
+        CompletableFuture.runAsync(() -> {
+            logfileService.processLogfileContent(savedLogfile);
+        });
+
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(logfileService.saveLogfile(logfile));
     }

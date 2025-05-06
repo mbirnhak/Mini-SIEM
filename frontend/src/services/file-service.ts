@@ -1,4 +1,4 @@
-import { fetchApi } from './api';
+import {fetchApi, postApi} from './api';
 import { Logfile } from '../types';
 
 export async function loadLogFiles() {
@@ -12,9 +12,36 @@ export async function loadLogFiles() {
             return;
         }
 
-        // Create table structure first
+        // Create table structure first with upload form
         logFilesTab.innerHTML = `
+        <div class="upload-container">
+          <h3>Upload Log File</h3>
+          <div class="upload-form">
+            <div class="form-group">
+              <label for="source-name">Source Name:</label>
+              <input type="text" id="source-name" placeholder="Enter source name">
+            </div>
+            <div class="form-group">
+              <label for="source-type">Source Type:</label>
+              <select id="source-type">
+                <option value="Firewall">Firewall</option>
+                <option value="IDS">Intrusion Detection System</option>
+                <option value="Server">Server</option>
+                <option value="Application">Application</option>
+                <option value="Network">Network Device</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="log-file">Select Log File:</label>
+              <input type="file" id="log-file" accept=".log,.txt">
+            </div>
+            <button id="upload-log-btn" class="action-btn">Upload Log File</button>
+          </div>
+          <div id="upload-status" class="upload-status"></div>
+        </div>
         <div class="table-container" id="log-files-table-container">
+          <h3>Log Files</h3>
           <table class="data-table" id="log-files-table">
             <thead>
               <tr>
@@ -80,6 +107,9 @@ export async function loadLogFiles() {
 
         // Add event listeners for action buttons
         initializeLogFileActionButtons();
+
+        // Initialize the upload button event listener
+        initializeUploadButton();
 
     } catch (error) {
         console.error('Error loading log files:', error);
@@ -194,4 +224,98 @@ async function deleteLogFile(id: string) {
             alert('Failed to delete log file');
         }
     }
+}
+
+// Add these functions to your file-service.ts file
+
+// Initialize upload button functionality
+function initializeUploadButton() {
+    const uploadButton = document.getElementById('upload-log-btn');
+    if (uploadButton) {
+        uploadButton.addEventListener('click', handleLogFileUpload);
+    }
+}
+
+// Handle log file upload
+async function handleLogFileUpload() {
+    const sourceNameInput = document.getElementById('source-name') as HTMLInputElement;
+    const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectElement;
+    const fileInput = document.getElementById('log-file') as HTMLInputElement;
+    const uploadStatus = document.getElementById('upload-status');
+
+    // Validate inputs
+    if (!sourceNameInput || !sourceTypeSelect || !fileInput || !uploadStatus) {
+        console.error('Upload form elements not found');
+        return;
+    }
+
+    const sourceName = sourceNameInput.value.trim();
+    const sourceType = sourceTypeSelect.value;
+    const file = fileInput.files?.[0];
+
+    // Check if all fields are filled
+    if (!sourceName) {
+        uploadStatus.innerHTML = '<span class="error">Please enter a source name</span>';
+        return;
+    }
+
+    if (!file) {
+        uploadStatus.innerHTML = '<span class="error">Please select a file to upload</span>';
+        return;
+    }
+
+    try {
+        // Show loading status
+        uploadStatus.innerHTML = '<span class="loading">Uploading file...</span>';
+
+        // Read the file content
+        const fileContent = await readFileAsText(file);
+
+        // Prepare the log file object
+        const logFile = {
+            sourcename: sourceName,
+            sourcetype: sourceType,
+            filename: file.name,
+            status: 'Pending', // Assuming PENDING is a valid LogFileStatus enum value
+            rawcontent: fileContent
+        };
+
+        // Send the upload request
+        const response = await postApi('/events/logfiles', logFile);
+
+        if (!response.ok) {
+            throw new Error(`Upload failed with status: ${response.status}`);
+        }
+
+        // Show success message
+        uploadStatus.innerHTML = '<span class="success">File uploaded successfully!</span>';
+
+        // Clear the form
+        sourceNameInput.value = '';
+        fileInput.value = '';
+
+        // Reload the log files list to show the newly uploaded file
+        await loadLogFiles();
+    } catch (error) {
+        console.error('Error uploading log file:', error);
+        uploadStatus.innerHTML = `<span class="error">Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}</span>`;
+    }
+}
+
+// Helper function to read file content as text
+function readFileAsText(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            if (event.target?.result) {
+                resolve(event.target.result as string);
+            } else {
+                reject(new Error('Failed to read file'));
+            }
+        };
+        reader.onerror = () => {
+            reject(new Error('Error reading file'));
+        };
+        reader.readAsText(file);
+    });
 }

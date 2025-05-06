@@ -1,4 +1,4 @@
-import {fetchApi} from './api';
+import {fetchApi, postApi} from './api';
 import {displayEvents} from '../components/events';
 
 export async function fetchLatestEvents() {
@@ -22,8 +22,9 @@ export async function fetchLatestEvents() {
 
 export async function fetchRawlineDetails(rawline: string) {
     try {
-        const encodedRawline = encodeURIComponent(rawline);
-        const response = await fetchApi(`/events/rawlines/${encodedRawline}`);
+        const response = await postApi(`/events/rawlines/details`, {
+            rawline: rawline
+        });
         return await response.json();
     } catch (error) {
         // Rethrow with a specific error property to indicate not found
