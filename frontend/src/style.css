@@ -375,6 +375,8 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   position: relative;
   animation: slideIn 0.3s ease-out;
+  overflow-wrap: break-word; /* Add this to handle long text */
+  word-break: break-word; /* Add this to ensure text breaks */
 }
 
 .modal-content h2 {
@@ -680,4 +682,94 @@ td .action-btn:last-child {
   color: #666;
   font-style: italic;
   padding: 20px;
+}
+
+/* Add these to your CSS file */
+#rawline-details pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+#rawline-modal .modal-content {
+  width: 90%;
+  max-width: 800px; /* Increase width to accommodate more content */
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-open {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.status-investigating {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-resolved {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.status-unknown {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* Alert details styling */
+.alert-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.detail-group {
+  margin-bottom: 12px;
+}
+
+.detail-group label {
+  display: block;
+  font-weight: 600;
+  color: #7f8c8d;
+  margin-bottom: 4px;
+}
+
+.alert-actions {
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* Status select dropdown styling */
+#status-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+#status-select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }

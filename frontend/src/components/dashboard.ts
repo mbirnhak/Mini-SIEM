@@ -3,6 +3,7 @@ import { loadDevices } from '../services/device-service.ts';
 import {loadLogFiles} from "../services/file-service.ts";
 import {loadActions} from "../services/action-service.ts";
 import {loadEventCategories} from "../services/category-service.ts";
+import {loadAlerts} from "../services/alert-service.ts";
 
 export function setupDashboard() {
     // Get elements
@@ -35,6 +36,12 @@ export function setupDashboard() {
     document.querySelector<HTMLButtonElement>('[data-tab="event-categories"]')?.addEventListener('click', () => {
         showTab('tab-event-categories');
         loadEventCategories();
+    });
+
+    // Set up alerts tab
+    document.querySelector<HTMLButtonElement>('[data-tab="alerts"]')?.addEventListener('click', () => {
+        showTab('tab-alerts');
+        loadAlerts();
     });
 }
 

@@ -75,3 +75,29 @@ export interface EventCategory {
     categoryname: string;
     description?: string;
 }
+
+export type AlertStatus = 'Open' | 'Investigating' | 'Resolved';
+
+export interface Alert {
+    id: number;
+    triggeredat: any; // ISO date string
+    ruleid: {
+        id: number
+    };
+    status: AlertStatus;
+}
+
+export type Severity = 'Low' | 'Medium' | 'High';
+
+export interface AlertRule {
+    id: number,
+    name: string,
+    description: string,
+    severity: Severity,
+    conditionlogic: any,
+    isactive: boolean,
+    createdby: {
+        id: number
+    },
+    createdat: any
+}

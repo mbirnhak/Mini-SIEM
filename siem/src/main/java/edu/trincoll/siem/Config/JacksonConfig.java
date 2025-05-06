@@ -2,6 +2,7 @@ package edu.trincoll.siem.Config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;  // Add this import
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,9 @@ public class JacksonConfig {
 
         // Register JavaTimeModule to handle Java 8 date/time types
         objectMapper.registerModule(new JavaTimeModule());
+
+        // Register Jdk8Module to handle Java 8 features like Optional
+        objectMapper.registerModule(new Jdk8Module());
 
         return objectMapper;
     }

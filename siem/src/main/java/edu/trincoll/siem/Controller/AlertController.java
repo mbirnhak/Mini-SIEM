@@ -10,6 +10,7 @@ import edu.trincoll.siem.Service.AlertruleService;
 import edu.trincoll.siem.Service.ThreatintelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -72,6 +73,30 @@ public class AlertController {
     @GetMapping("/alerts/latest")
     public List<Alert> getLatestAlerts(@RequestParam int limit) {
         return alertService.getLatestAlerts(limit);
+    }
+
+    @PutMapping("/alerts/{id}/status")
+    public ResponseEntity<?> updateAlertStatus(@PathVariable Integer id, @RequestParam("status") String statusParam) {
+        AlertStatus status;
+
+        // Validate the status string against the enum
+        try {
+            status = AlertStatus.valueOf(statusParam);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status value. Allowed values: Open, Investigating, Resolved.");
+        }
+
+        Optional<Alert> alertOptional = alertService.getAlertById(id);
+
+        if (alertOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Alert alert = alertOptional.get();
+        alert.setStatus(status);
+        alertService.saveAlert(alert);  // Ensure it's persisted
+
+        return ResponseEntity.ok(alert);  // Optionally return the updated alert
     }
 
     // ** Alertrule Endpoints **

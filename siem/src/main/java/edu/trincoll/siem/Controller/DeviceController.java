@@ -94,8 +94,7 @@ public class DeviceController {
     }
 
     @GetMapping("/filter")
-    public List<Device> getDevicesByLocationAndType(@RequestParam String location,
-                                                    @RequestParam String type) {
+    public List<Device> getDevicesByLocationAndType(@RequestParam String location, @RequestParam String type) {
         return deviceService.getDevicesByLocationAndType(location, type);
     }
 
