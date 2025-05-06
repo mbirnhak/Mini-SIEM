@@ -73,4 +73,18 @@ public interface LogeventRepository extends JpaRepository<Logevent, Integer> {
             "((:hasAlert = true AND l.associatedalertid IS NOT NULL) OR " +
             "(:hasAlert = false AND l.associatedalertid IS NULL))")
     List<Logevent> findByFileAndAlertStatus(@Param("file") Logfile file, @Param("hasAlert") boolean hasAlert);
+
+    @Query(nativeQuery = true, value =
+            "SELECT le.logeventid, le.timestamp, lf.filename, lf.sourcename, " +
+                    "r.rawline, r.message, sd.hostname AS source_hostname, dd.hostname AS dest_hostname, " +
+                    "a.action, ec.categoryname " +
+                    "FROM logevent le " +
+                    "JOIN logfile lf ON le.fileid = lf.fileid " +
+                    "JOIN rawline r ON le.rawline = r.rawline " +
+                    "LEFT JOIN device sd ON r.sourcedeviceid = sd.deviceid " +
+                    "LEFT JOIN device dd ON r.destinationdeviceid = dd.deviceid " +
+                    "LEFT JOIN action a ON r.action = a.action " +
+                    "LEFT JOIN eventcategory ec ON a.categoryname = ec.categoryname " +
+                    "ORDER BY le.timestamp DESC")
+    List<Object[]> getComplexEventReport();
 }

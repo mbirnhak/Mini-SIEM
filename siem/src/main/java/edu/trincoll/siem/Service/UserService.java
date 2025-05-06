@@ -179,4 +179,8 @@ public class UserService {
             userRepository.save(user);
         });
     }
+
+    public List<Object[]> getActiveUsers(int minActions) {
+        return userRepository.getActiveUsers(minActions);
+    }
 }

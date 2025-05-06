@@ -78,4 +78,12 @@ public class IncidentreportService {
     public List<Object[]> countReportsPerDay() {
         return incidentreportRepository.countReportsPerDay();
     }
+
+    public List<Incidentreport> getReportsWithCriticalEvents() {
+        return incidentreportRepository.getReportsWithCriticalEvents();
+    }
+
+    public List<Incidentreport> getReportsWithRelatedEvents(Integer alertId) {
+        return incidentreportRepository.getReportsWithRelatedEvents(alertId);
+    }
 }

@@ -84,4 +84,8 @@ public class RawlineService {
     public List<Object[]> countByAction() {
         return rawlineRepository.countByAction();
     }
+
+    public List<Object[]> getHighTrafficSourceDevices() {
+        return rawlineRepository.getHighTrafficSourceDevices();
+    }
 }

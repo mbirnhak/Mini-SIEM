@@ -153,4 +153,24 @@ public class IncidentController {
         Incidenteventlink createdLink = incidenteventlinkService.saveLink(incidenteventlink);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdLink);
     }
+
+    /**
+     * Finds incident reports linked to critical events using subqueries
+     * This is a non-trivial subquery application
+     */
+    @GetMapping("/reports/with-critical-events")
+    public ResponseEntity<List<Incidentreport>> getReportsWithCriticalEvents() {
+        return ResponseEntity.ok(incidentreportService.getReportsWithCriticalEvents());
+    }
+
+    /**
+     * Finds reports with events related to a specific alert using set operations (UNION, EXCEPT)
+     * This implements set operations in SQL
+     * @param alertId The ID of the alert to find related events for
+     */
+    @GetMapping("/reports/with-related-events")
+    public ResponseEntity<List<Incidentreport>> getReportsWithRelatedEvents(
+            @RequestParam Integer alertId) {
+        return ResponseEntity.ok(incidentreportService.getReportsWithRelatedEvents(alertId));
+    }
 }

@@ -53,4 +53,30 @@ public interface IncidentreportRepository extends JpaRepository<Incidentreport, 
             "GROUP BY FUNCTION('DATE', i.createdat) " +
             "ORDER BY i.createdat DESC")
     List<Object[]> countReportsPerDay();
+
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM incidentreport ir " +
+                    "WHERE ir.reportid IN (" +
+                    "    SELECT iel.reportid FROM incidenteventlink iel " +
+                    "    JOIN logevent le ON iel.logeventid = le.logeventid " +
+                    "    JOIN rawline r ON le.rawline = r.rawline " +
+                    "    JOIN action a ON r.action = a.action " +
+                    "    JOIN eventcategory ec ON a.categoryname = ec.categoryname " +
+                    "    WHERE ec.categoryname IN ('Critical', 'Security', 'Intrusion') " +
+                    ") " +
+                    "ORDER BY ir.createdat DESC")
+    List<Incidentreport> getReportsWithCriticalEvents();
+
+    @Query(nativeQuery = true, value =
+            "SELECT * FROM incidentreport WHERE " +
+                    "relatedalertid = :alertId " +
+                    "UNION " +
+                    "SELECT ir.* FROM incidentreport ir " +
+                    "JOIN incidenteventlink iel ON ir.reportid = iel.reportid " +
+                    "JOIN logevent le ON iel.logeventid = le.logeventid " +
+                    "WHERE le.associatedalertid = :alertId " +
+                    "EXCEPT " +
+                    "SELECT ir.* FROM incidentreport ir " +
+                    "WHERE ir.createdat < (SELECT triggeredat FROM alert WHERE alertid = :alertId)")
+    List<Incidentreport> getReportsWithRelatedEvents(@Param("alertId") Integer alertId);
 }

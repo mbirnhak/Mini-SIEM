@@ -182,4 +182,24 @@ public class AlertController {
     public void deleteThreatintel(@PathVariable Integer id) {
         threatintelService.deleteThreatintelById(id);
     }
+
+    /**
+     * Gets summary statistics of alerts grouped by rule using subqueries
+     * Uses aggregate functions (COUNT, MAX) with subqueries
+     */
+    @GetMapping("/alerts/summary-by-rule")
+    public ResponseEntity<List<Object[]>> getAlertSummaryByRule() {
+        return ResponseEntity.ok(alertService.getAlertSummaryByRule());
+    }
+
+    /**
+     * Finds alert rules that have been triggered frequently
+     * Uses GROUP BY with HAVING clause
+     * @param minAlerts Minimum number of alerts to consider "frequent" (default: 5)
+     */
+    @GetMapping("/alertrules/frequently-triggered")
+    public ResponseEntity<List<Object[]>> getFrequentlyTriggeredRules(
+            @RequestParam(defaultValue = "5") int minAlerts) {
+        return ResponseEntity.ok(alertruleService.getFrequentlyTriggeredRules(minAlerts));
+    }
 }

@@ -82,4 +82,7 @@ public class LogeventService {
         return logeventRepository.getLogEventCountPerHour(startTime, endTime);
     }
 
+    public List<Object[]> getComplexEventReport() {
+        return logeventRepository.getComplexEventReport();
+    }
 }

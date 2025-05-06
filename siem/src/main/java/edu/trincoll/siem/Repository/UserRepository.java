@@ -28,4 +28,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // Custom query example (users who haven't logged in but were created recently)
     @Query("SELECT u FROM User u WHERE u.lastlogin IS NULL AND u.createdat > :createdAfter")
     List<User> findNewUsersWhoNeverLoggedIn(@Param("createdAfter") Instant createdAfter);
+
+    @Query(nativeQuery = true, value =
+            "SELECT u.userid, u.username, u.name, u.email, " +
+                    "COUNT(DISTINCT ir.reportid) AS reports_created, " +
+                    "COUNT(DISTINCT lf.fileid) AS files_uploaded, " +
+                    "COUNT(DISTINCT ar.ruleid) AS rules_created " +
+                    "FROM \"user\" u " +
+                    "LEFT JOIN incidentreport ir ON u.userid = ir.createdby " +
+                    "LEFT JOIN logfile lf ON u.userid = lf.uploadedby " +
+                    "LEFT JOIN alertrule ar ON u.userid = ar.createdby " +
+                    "GROUP BY u.userid, u.username, u.name, u.email " +
+                    "HAVING (COUNT(DISTINCT ir.reportid) + COUNT(DISTINCT lf.fileid) + COUNT(DISTINCT ar.ruleid)) >= :minActions " +
+                    "ORDER BY (COUNT(DISTINCT ir.reportid) + COUNT(DISTINCT lf.fileid) + COUNT(DISTINCT ar.ruleid)) DESC")
+    List<Object[]> getActiveUsers(@Param("minActions") int minActions);
 }

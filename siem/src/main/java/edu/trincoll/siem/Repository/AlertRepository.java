@@ -40,4 +40,16 @@ public interface AlertRepository extends JpaRepository<Alert, Integer> {
     // Find alerts by rule severity (using join)
     @Query("SELECT a FROM Alert a WHERE a.ruleid.severity = :severity")
     List<Alert> findByRuleSeverity(@Param("severity") edu.trincoll.siem.Model.Enums.Severity severity);
+
+    @Query(nativeQuery = true, value =
+            "SELECT ar.ruleid, ar.name, ar.severity, " +
+                    "COUNT(a.alertid) AS alert_count, " +
+                    "MAX(a.triggeredat) AS last_triggered, " +
+                    "(SELECT COUNT(*) FROM alert WHERE ruleid = ar.ruleid AND status = 'OPEN') AS open_alerts, " +
+                    "(SELECT username FROM \"user\" WHERE userid = ar.createdby) AS created_by " +
+                    "FROM alertrule ar " +
+                    "LEFT JOIN alert a ON ar.ruleid = a.ruleid " +
+                    "GROUP BY ar.ruleid, ar.name, ar.severity " +
+                    "ORDER BY alert_count DESC")
+    List<Object[]> getAlertSummaryByRule();
 }

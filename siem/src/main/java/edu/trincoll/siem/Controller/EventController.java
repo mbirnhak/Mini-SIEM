@@ -410,4 +410,22 @@ public class EventController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endTime) {
         return logeventService.getEventCountTimeSeries(startTime, endTime);
     }
+
+    /**
+     * Complex report joining log events with multiple related entities
+     * This query involves 4+ relations (LogEvent, RawLine, LogFile, Device, Action)
+     */
+    @GetMapping("/complex-report")
+    public ResponseEntity<List<Object[]>> getComplexEventReport() {
+        return ResponseEntity.ok(logeventService.getComplexEventReport());
+    }
+
+    /**
+     * Identifies source devices with abnormally high traffic using subqueries
+     * This is a non-trivial subquery application
+     */
+    @GetMapping("/events/high-traffic-sources")
+    public ResponseEntity<List<Object[]>> getHighTrafficSources() {
+        return ResponseEntity.ok(rawlineService.getHighTrafficSourceDevices());
+    }
 }

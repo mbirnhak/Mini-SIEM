@@ -165,4 +165,15 @@ public class UserController {
     public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.existsByEmail(email));
     }
+
+    /**
+     * Identifies users who have performed a minimum number of actions
+     * Uses GROUP BY with HAVING clause
+     * @param minActions Minimum number of actions to consider "active" (default: 3)
+     */
+    @GetMapping("/active-users")
+    public ResponseEntity<List<Object[]>> getActiveUsers(
+            @RequestParam(defaultValue = "3") int minActions) {
+        return ResponseEntity.ok(userService.getActiveUsers(minActions));
+    }
 }

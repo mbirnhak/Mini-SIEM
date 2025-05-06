@@ -52,4 +52,15 @@ public interface AlertruleRepository extends JpaRepository<Alertrule, Integer> {
     // Find latest rules (paginated)
     @Query("SELECT a FROM Alertrule a ORDER BY a.createdat DESC")
     List<Alertrule> findLatestRules(org.springframework.data.domain.Pageable pageable);
+
+    @Query(nativeQuery = true, value =
+            "SELECT ar.ruleid, ar.name, ar.severity, ar.description, " +
+                    "COUNT(a.alertid) AS alert_count, " +
+                    "MAX(a.triggeredat) AS last_triggered " +
+                    "FROM alertrule ar " +
+                    "JOIN alert a ON ar.ruleid = a.ruleid " +
+                    "GROUP BY ar.ruleid, ar.name, ar.severity, ar.description " +
+                    "HAVING COUNT(a.alertid) >= :minAlerts " +
+                    "ORDER BY alert_count DESC")
+    List<Object[]> getFrequentlyTriggeredRules(@Param("minAlerts") int minAlerts);
 }

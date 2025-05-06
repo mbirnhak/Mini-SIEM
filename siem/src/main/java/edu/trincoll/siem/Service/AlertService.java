@@ -66,4 +66,8 @@ public class AlertService {
     public void deleteAlertById(Integer id) {
         alertRepository.deleteById(id);
     }
+
+    public List<Object[]> getAlertSummaryByRule() {
+        return alertRepository.getAlertSummaryByRule();
+    }
 }

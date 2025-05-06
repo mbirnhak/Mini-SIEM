@@ -273,3 +273,38 @@ Remove outdated logs, clear false positives
 ---
 
 > **Note**: I was going to add support for hypertables on LogEvent and Alert table to increase query speed on time-series data. However, timescaledb does not support foreign key references to hypertables so this is omitted.
+
+
+# Complex SQL Query Descriptions
+
+## Complex Multi-Table Relations Queries
+
+1. **Complex Event Report Query**: This query joins six tables (LogEvent, LogFile, RawLine, Device (twice, as source and destination), Action, and EventCategory) to produce a comprehensive event report. It retrieves detailed information about each log event including its timestamp, associated file information, raw line content, source and destination device hostnames, the action performed, and its category. This creates a consolidated view that would be impossible to achieve without joining multiple relations.
+
+2. **Active Users Analysis Query**: This query joins four tables (User, IncidentReport, LogFile, and AlertRule) to identify users who have performed a minimum number of system actions. It counts distinct reports created, files uploaded, and alert rules defined by each user, then filters for those exceeding a specified activity threshold. The query demonstrates complex multi-table relationships by connecting user activity across multiple system components.
+
+## Join Query
+
+3. **Alert Summary by Rule Query**: This query joins the AlertRule and Alert tables to generate a statistical summary of how frequently each rule has been triggered. It produces a report showing each rule's ID, name, severity, total alert count, and most recent trigger time. The join between these tables allows for aggregating alert data while maintaining access to the rule details.
+
+## Aggregate Function Query
+
+4. **Frequently Triggered Rules Query**: This query uses COUNT and MAX aggregate functions to identify alert rules that have been triggered more frequently than a specified threshold. It counts the number of alerts per rule and finds the most recent trigger timestamp, then filters rules that have generated at least a minimum number of alerts. This provides insight into which rules are most active in the system.
+
+## Subquery Usage
+
+5. **High Traffic Source Devices Query**: This query uses nested subqueries to identify devices generating abnormal amounts of network traffic. The innermost subquery calculates the average event count across all devices, the middle subquery finds devices exceeding this average, and the outer query retrieves detailed information about these high-traffic devices. This multi-level subquery approach enables identifying statistical outliers.
+
+6. **Reports with Critical Events Query**: This query employs a subquery to find incident reports linked to security-critical events. It searches for reports containing events associated with specific high-importance categories like 'Critical', 'Security', or 'Intrusion'. The subquery filters events by examining their connection to actions of specific categories, then the main query retrieves the matching reports.
+
+7. **Alert Summary with Open Count Query**: This query uses a correlated subquery to count the number of open alerts for each rule while gathering overall rule statistics. The subquery dynamically filters alerts by the current rule being processed in the outer query, allowing the open alert count to be calculated separately for each rule without requiring additional joins.
+
+## Grouping with HAVING
+
+8. **Frequently Triggered Rules Query**: This query groups alerts by rule and applies a HAVING clause to filter for rules that have triggered at least a minimum number of alerts. It retrieves rule details alongside alert statistics, but only for those rules meeting the frequency threshold. This helps identify the most problematic or noisy alert rules in the system.
+
+9. **Active Users Group Query**: This query groups user activity data across multiple tables and applies a HAVING clause to filter for users who have performed at least a specified minimum number of total actions. It combines different types of user activities (reports created, files uploaded, rules created) and filters based on their sum, showing only the most active users.
+
+## Set Operations
+
+10. **Reports with Related Events Query**: This query uses UNION and EXCEPT set operations to find incident reports related to a specific alert. It combines reports directly associated with the alert and reports containing events linked to the alert, then removes reports created before the alert was triggered. This demonstrates how set operations can combine and filter results from different query conditions.

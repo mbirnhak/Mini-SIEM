@@ -81,4 +81,8 @@ public class AlertruleService {
     public void deleteAlertruleById(Integer id) {
         alertruleRepository.deleteById(id);
     }
+
+    public List<Object[]> getFrequentlyTriggeredRules(int minAlerts) {
+        return alertruleRepository.getFrequentlyTriggeredRules(minAlerts);
+    }
 }

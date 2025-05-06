@@ -93,4 +93,24 @@ public interface RawlineRepository extends JpaRepository<Rawline, String> {
             @Param("destPort") Integer destPort,
             @Param("actionId") String actionId,
             @Param("messageText") String messageText);
+
+    @Query(nativeQuery = true, value =
+            "SELECT d.deviceid, d.hostname, d.ipaddress, d.location, " +
+                    "COUNT(r.rawline) AS event_count " +
+                    "FROM device d " +
+                    "JOIN rawline r ON d.deviceid = r.sourcedeviceid " +
+                    "WHERE d.deviceid IN (" +
+                    "    SELECT sourcedeviceid FROM rawline " +
+                    "    GROUP BY sourcedeviceid " +
+                    "    HAVING COUNT(*) > (" +
+                    "        SELECT AVG(event_count) FROM (" +
+                    "            SELECT COUNT(*) AS event_count FROM rawline " +
+                    "            WHERE sourcedeviceid IS NOT NULL " +
+                    "            GROUP BY sourcedeviceid" +
+                    "        ) AS counts" +
+                    "    )" +
+                    ") " +
+                    "GROUP BY d.deviceid, d.hostname, d.ipaddress, d.location " +
+                    "ORDER BY event_count DESC")
+    List<Object[]> getHighTrafficSourceDevices();
 }
