@@ -101,3 +101,11 @@ export interface AlertRule {
     },
     createdat: any
 }
+
+export interface Threatintel {
+    id?: number;
+    indicator: string;
+    type: string;
+    severity: string;
+    description?: string;
+}
