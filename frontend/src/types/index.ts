@@ -109,3 +109,16 @@ export interface Threatintel {
     severity: string;
     description?: string;
 }
+
+export interface Incidentreport {
+    id: number;
+    title?: string;
+    description?: string;
+    createdat?: string;
+    createdby?: {
+        id: number;
+    };
+    relatedalertid?: {
+        id: number;
+    };
+}

@@ -6,6 +6,7 @@ import { loadEventCategories } from "../services/category-service.ts";
 import { loadAlerts } from "../services/alert-service.ts";
 import { loadAdvancedReportsTab } from "./advanced.ts";
 import {loadThreatIntel} from "../services/threat-intell-service.ts";
+import {loadIncidentReports} from "../services/incident-report-service.ts";
 
 export function setupDashboard() {
     // Get elements
@@ -55,6 +56,11 @@ export function setupDashboard() {
     document.querySelector<HTMLButtonElement>('[data-tab="threat-intel"]')?.addEventListener('click', () => {
         showTab('tab-threat-intel');
         loadThreatIntel();
+    });
+
+    document.querySelector<HTMLButtonElement>('[data-tab="incident-reports"]')?.addEventListener('click', () => {
+        showTab('tab-incident-reports');
+        loadIncidentReports();
     });
 }
 
