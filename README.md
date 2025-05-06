@@ -20,7 +20,7 @@ docker run -p 5432:5432 \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_DB=postgres \
-  postgres:17
+  timescale/timescaledb:2.14.2-pg14
 ```
 ## Step 2: Clone the Repository
 
@@ -52,6 +52,11 @@ npm run dev
 Navigate to `http://localhost:5173`
 
 There is a `example-logfile1.txt` file in the main directory that may be uploaded. It is automatically parsed on upload.
+
+Test login credentials (although you can register yourself as well):
+
+`username`: mbirnhak
+`password`: tester123
 
 ## Proposed Entities  
 
