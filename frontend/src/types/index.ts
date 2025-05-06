@@ -122,3 +122,16 @@ export interface Incidentreport {
         id: number;
     };
 }
+
+export interface Alertrule {
+    id: number;
+    name: string;
+    description?: string;
+    severity: string;
+    conditionlogic: Record<string, any>;
+    isactive: boolean;
+    createdat?: string;
+    createdby?: {
+        id: number;
+    };
+}

@@ -886,11 +886,6 @@ td .action-btn:last-child {
   text-transform: uppercase;
 }
 
-.severity-critical {
-  background-color: #ffcdd2;
-  color: #c62828;
-}
-
 .severity-high {
   background-color: #ffecb3;
   color: #ff8f00;
