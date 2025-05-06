@@ -87,6 +87,7 @@ export function renderInitialHTML() {
         <button class="nav-tab" data-tab="devices">Devices</button>
         <button class="nav-tab" data-tab="log-files">Log Files</button>
         <button class="nav-tab" data-tab="log-events">Log Events</button>
+        <button class="nav-tab" data-tab="rawlines">Rawlines</button>
         <button class="nav-tab" data-tab="alerts">Alerts</button>
         <button class="nav-tab" data-tab="alert-rules">Alert Rules</button>
         <button class="nav-tab" data-tab="incident-reports">Incident Reports</button>
@@ -122,6 +123,7 @@ export function renderInitialHTML() {
             </table>
           </div>
         </div>
+        <div class="tab-panel" id="tab-rawlines" style="display: none;">Loading Rawlines...</div>
         <div class="tab-panel" id="tab-alerts" style="display: none;">Loading Alerts...</div>
         <div class="tab-panel" id="tab-alert-rules" style="display: none;">Loading Alert Rules...</div>
         <div class="tab-panel" id="tab-incident-reports" style="display: none;">Loading Incidents...</div>

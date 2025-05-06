@@ -79,7 +79,7 @@ export function createRawlineModal() {
         closeBtn.className = 'close';
         closeBtn.innerHTML = '&times;';
         closeBtn.onclick = () => {
-            rawlineModal.classList.remove('active');
+            rawlineModal!.classList.remove('active');
         };
 
         const title = document.createElement('h2');
@@ -98,7 +98,7 @@ export function createRawlineModal() {
         // Close modal when clicking outside
         window.addEventListener('click', (event) => {
             if (event.target === rawlineModal) {
-                rawlineModal.classList.remove('active');
+                rawlineModal!.classList.remove('active');
             }
         });
     }

@@ -135,3 +135,20 @@ export interface Alertrule {
         id: number;
     };
 }
+
+export interface Rawline {
+    rawline: string;
+    sourcedeviceid?: {
+        id: number;
+    };
+    sourceport?: number;
+    destinationdeviceid?: {
+        id: number;
+    };
+    destinationport?: number;
+    action?: {
+        action: string;
+    };
+    message?: string;
+    parseddata?: Record<string, any>;
+}

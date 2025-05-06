@@ -181,7 +181,7 @@ async function insertRawline(rawline: string) {
     try {
         // Parse the raw line to extract relevant information
         const parsedData = parseRawLine(rawline);
-
+        console.log("Parsed line: ", parsedData);
         // Check if action exists in the database (if an action was identified)
         let actionExists = false;
         let actionId = null;
@@ -191,9 +191,21 @@ async function insertRawline(rawline: string) {
                 const actionResponse = await fetchApi(`/events/actions/${encodeURIComponent(parsedData.action)}`);
                 actionExists = actionResponse.ok;
                 if (actionExists) {
-                    const actionData = await actionResponse.json();
-                    actionId = actionData.action;
+                    actionId = parsedData.action;
                 }
+                // } else {
+                //     const newAction = {
+                //         action: parsedData.action,
+                //         categoryname: null
+                //     };
+                //     const actionResponse = await postApi('/events/actions', newAction);
+                //     if (actionResponse.ok) {
+                //         const createdAction = await actionResponse.json();
+                //         actionId = createdAction.action;
+                //     } else {
+                //         throw new Error(`Failed to create action: ${actionResponse.status} ${actionResponse.statusText}`);
+                //     }
+                // }
             } catch (error) {
                 console.error('Error checking action:', error);
             }
@@ -343,6 +355,7 @@ async function insertRawline(rawline: string) {
 
                     if (actionResponse.ok) {
                         const createdAction = await actionResponse.json();
+                        console.log("Created actions", createdAction)
                         actionId = createdAction.action;
                     } else {
                         throw new Error(`Failed to create action: ${actionResponse.status} ${actionResponse.statusText}`);
@@ -416,6 +429,7 @@ async function insertRawline(rawline: string) {
             parseddata: parsedData.additionalData || null
         };
 
+        console.log("Rawline before insertion: ", rawlineData)
         // Send POST request to create the raw line
         const response = await postApi('/events/rawlines', rawlineData);
 
@@ -424,6 +438,7 @@ async function insertRawline(rawline: string) {
             throw new Error(`Failed to insert raw line: ${response.status} ${response.statusText} - ${errorText}`);
         }
 
+        console.log("Reponse", await response.json())
         return await response.json();
     } catch (error) {
         console.error('Error inserting raw line:', error);

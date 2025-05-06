@@ -95,17 +95,17 @@ function createCharts(stats: any) {
     createBarChart('eventsByFileChart', stats.eventsByFile, 'File ID', 'Event Count');
 
     // Create Actions by Category Chart
-    createPieChart('actionsByCategoryChart', stats.actionsByCategory, 'Category', 'Count');
+    createPieChart('actionsByCategoryChart', stats.actionsByCategory);
 
     // Create Raw Lines by Action Chart (Top 10)
     const topRawLines = stats.rawlinesByAction.slice(0, 10);
     createBarChart('rawlinesByActionChart', topRawLines, 'Action', 'Count');
 
     // Create Devices by OS Chart
-    createPieChart('devicesByOSChart', stats.devicesByOS, 'Operating System', 'Count');
+    createPieChart('devicesByOSChart', stats.devicesByOS);
 
     // Create Devices by Location Chart
-    createPieChart('devicesByLocationChart', stats.devicesByLocation, 'Location', 'Count');
+    createPieChart('devicesByLocationChart', stats.devicesByLocation);
 }
 
 function createBarChart(canvasId: string, data: any[], labelKey: string, valueKey: string) {
@@ -162,7 +162,7 @@ function createBarChart(canvasId: string, data: any[], labelKey: string, valueKe
     });
 }
 
-function createPieChart(canvasId: string, data: any[], labelKey: string, valueKey: string) {
+function createPieChart(canvasId: string, data: any[]) {
     const ctx = document.getElementById(canvasId) as HTMLCanvasElement;
 
     new Chart(ctx, {

@@ -61,7 +61,7 @@ export async function fetchActiveUsers(minActions = 3) {
     }
 }
 
-export async function fetchReportsWithRelatedEvents(alertId) {
+export async function fetchReportsWithRelatedEvents(alertId: number) {
     try {
         const response = await fetchApi(`/incidents/reports/with-related-events?alertId=${alertId}`);
         return await response.json();
