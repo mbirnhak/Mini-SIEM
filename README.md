@@ -30,20 +30,14 @@ Clone the project repository to your local machine:
 git clone https://github.com/mbirnhak/Mini-SIEM.git
 cd Mini-SIEM
 ```
+
 ## Step 3: Backend Setup
 
-### Step 3.1: Navigate to the backend directory
+Navigate to the backend directory and run it.
+
 ```bash
 cd siem
-```
-### Step 3.2: Run backend depending on machine
-```bash
-# For Mac
-./gradlew bootRun --args='--spring.profiles.active=mac'
-```
-```bash
-# For Windows
-./gradlew bootRun --args='--spring.profiles.active=windows'
+./gradlew bootRun
 ```
 
 ## Step 4: Frontend Setup
