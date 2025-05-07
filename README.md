@@ -62,11 +62,6 @@ Navigate to `http://localhost:5173`
 
 There is a `example-logfile1.txt` file in the main directory that may be uploaded. It is automatically parsed on upload.
 
-Test login credentials (although you can register yourself as well):
-
-`username`: mbirnhak
-`password`: tester123
-
 ## Proposed Entities  
 
 The proposed system will include several key entities to manage log collection, storage, and visualization effectively:  
