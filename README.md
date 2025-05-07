@@ -32,9 +32,18 @@ cd Mini-SIEM
 ```
 ## Step 3: Backend Setup
 
+### Step 3.1: Navigate to the backend directory
 ```bash
 cd siem
-./gradlew bootRun
+```
+### Step 3.2: Run backend depending on machine
+```bash
+# For Mac
+./gradlew bootRun --args='--spring.profiles.active=mac'
+```
+```bash
+# For Windows
+./gradlew bootRun --args='--spring.profiles.active=windows'
 ```
 
 ## Step 4: Frontend Setup
